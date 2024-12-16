@@ -6,7 +6,7 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "verbatimModuleSyntax": false,
-    "types": ["react", "react-dom"],
+    "types": ["react", "react-dom", "@cloudflare/workers-types"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

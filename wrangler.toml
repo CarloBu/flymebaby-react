@@ -1,0 +1,6 @@
+name = "keepalive-flymebaby-worker"
+main = "src/workers/keepalive.ts"
+
+
+[triggers]
+crons = ["*/14 * * * *"] 
