@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FlightSearch from '../components/react/FlightSearch';
+import { ThemeToggle } from '../components/ThemeToggle';
+---
+
+<Layout title='Flight Search'>
+	<script is:inline>
+		const getThemePreference = () => {
+			if (
+				typeof localStorage !== 'undefined' &&
+				localStorage.getItem('theme')
+			) {
+				return localStorage.getItem('theme');
+			}
+			return 'light';
+		};
+		const isDark = getThemePreference() === 'dark';
+		document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+
+		if (typeof localStorage !== 'undefined') {
+			if (!localStorage.getItem('theme')) {
+				localStorage.setItem('theme', 'light');
+			}
+
+			const observer = new MutationObserver(() => {
+				const isDark = document.documentElement.classList.contains('dark');
+				localStorage.setItem('theme', isDark ? 'dark' : 'light');
+			});
+			observer.observe(document.documentElement, {
+				attributes: true,
+				attributeFilter: ['class'],
+			});
+		}
+	</script>
+
+	<main class='relative mx-auto min-h-[calc(100vh+1px)] py-1 sm:py-8'>
+		<div class='fixed right-4 top-4'>
+			<ThemeToggle client:load />
+		</div>
+
+		<div class='text-center'>
+			<h1 class='mt-8 text-4xl font-bold'>Fly me baby</h1>
+		</div>
+		<FlightSearch client:load />
+
+		<a
+			href='https://oaksun.studio'
+			target='_blank'
+			rel='noopener noreferrer'
+			class='fixed bottom-4 right-4 flex items-center gap-1 text-sm text-gray-600 transition-colors duration-300 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'>
+			made by
+			<span class='font-semibold'>OAKSUN</span>
+		</a>
+	</main>
+</Layout>

@@ -1,0 +1,48 @@
+/* Base transitions for all interactive elements */
+.button-animation {
+  @apply transition-all duration-300 ease-out;
+}
+
+/* For elements that change position */
+.position-animation {
+  @apply transition-all duration-500 ease-out transform;
+  will-change: transform, opacity;
+}
+
+/* For layout changes and repositioning */
+.layout-animation {
+  @apply transition-[transform,opacity] duration-500 ease-out;
+  will-change: transform, opacity;
+}
+
+/* For elements that need to animate their dimensions */
+.dimension-animation {
+  @apply transition-[width] duration-300 ease-out;
+  will-change: width;
+  white-space: nowrap;
+}
+
+/* For elements that fade in/out */
+.fade-animation {
+  @apply opacity-0 transition-opacity duration-300 ease-out;
+}
+
+.fade-animation.show {
+  @apply opacity-100;
+}
+
+/* For elements that pop in/out */
+.pop-animation {
+  @apply scale-95 opacity-0 transition-all duration-300 ease-out;
+}
+
+.pop-animation.show {
+  @apply scale-100 opacity-100;
+}
+
+/* For smooth text changes */
+.text-change-animation {
+  @apply transition-[width,transform] duration-300 ease-out;
+  white-space: nowrap;
+  will-change: width, transform;
+} 

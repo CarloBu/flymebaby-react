@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.fmb-scrollbar {
+	@apply [&::-webkit-scrollbar-thumb]:bg-gray-500
+	hover:[&::-webkit-scrollbar-thumb]:bg-orange-custom
+	active:[&::-webkit-scrollbar-thumb]:bg-orange-hover-custom
+	dark:[&::-webkit-scrollbar-thumb]:bg-gray-600
+	dark:hover:[&::-webkit-scrollbar-thumb]:bg-gray-600
+	dark:active:[&::-webkit-scrollbar-thumb]:bg-gray-700
+	[&::-webkit-scrollbar-track]:bg-white
+	dark:[&::-webkit-scrollbar-track]:bg-gray-900
+	[&::-webkit-scrollbar]:w-1;
+}
+.orange-button {
+  @apply whitespace-nowrap rounded-full bg-orange-custom px-6 py-3 text-center text-base text-white shadow-orange-shadow hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow [font-smooth:always]
+}
+
+.button-animation{
+  @apply scale-100 select-none transition-all duration-300 ease-pop will-change-transform hover:scale-[1.04] active:scale-95 [backface-visibility:hidden] [transform-style:preserve-3d]
+}
+
+.button-animation-subtle{
+  @apply scale-100 select-none transition-all duration-300 ease-pop will-change-transform hover:scale-[1.02] active:scale-[0.98] [backface-visibility:hidden] [transform-style:preserve-3d]
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+ 
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+ 
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+ 
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+ 
+    --accent: 0 0% 92%;
+    --accent-foreground: 0 0% 9%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+ 
+    --radius: 0.5rem;
+ 
+    --chart-1: 12 76% 61%;
+ 
+    --chart-2: 173 58% 39%;
+ 
+    --chart-3: 197 37% 24%;
+ 
+    --chart-4: 43 74% 66%;
+ 
+    --chart-5: 27 87% 67%;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 0 0% 100%;
+ 
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+ 
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+ 
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+ 
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+ 
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+ 
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+ 
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+ 

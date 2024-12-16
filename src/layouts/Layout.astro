@@ -1,0 +1,78 @@
+---
+import '../styles/globals.css';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang='en'>
+	<head>
+		<meta charset='UTF-8' />
+		<meta
+			name='description'
+			content='Flight Search Application'
+		/>
+		<meta
+			name='viewport'
+			content='width=device-width'
+		/>
+		<link
+			rel='icon'
+			type='image/svg+xml'
+			href='/favicon.svg'
+		/>
+		<meta
+			name='generator'
+			content={Astro.generator}
+		/>
+		<title>{title}</title>
+		<link
+			href='https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap'
+			rel='stylesheet'
+		/>
+		<script is:inline>
+			const theme = (() => {
+				if (
+					typeof localStorage !== 'undefined' &&
+					localStorage.getItem('theme')
+				) {
+					return localStorage.getItem('theme');
+				}
+				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+					return 'dark';
+				}
+				return 'light';
+			})();
+
+			if (theme === 'dark') {
+				document.documentElement.classList.add('dark');
+			} else {
+				document.documentElement.classList.remove('dark');
+			}
+		</script>
+	</head>
+	<body
+		class='fmb-scrollbar text-body min-h-screen bg-white font-outfit font-medium tracking-wide text-gray-900 antialiased dark:bg-gray-900 dark:text-white'>
+		<slot />
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Improve text rendering */
+	html {
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-rendering: optimizeLegibility;
+	}
+</style>
