@@ -36,9 +36,22 @@ interface SearchParams {
 // Add a loading indicator component
 function LoadingIndicator() {
   return (
-    <div className="flex items-center gap-2 text-gray-600">
-      <div className="h-4 w-4 animate-spin select-none rounded-full border-2 border-black border-t-transparent"></div>
-      <span>Searching for flights...</span>
+    <div className="mx-auto flex max-w-3xl select-none flex-col items-center justify-center rounded-3xl border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
+      <div className="mb-6 flex items-center justify-center">
+        <div className="relative h-16 w-16">
+          {/* Outer spinning circle */}
+          <div className="absolute inset-0 animate-[spin_2s_linear_infinite] rounded-full border-[3px] border-gray-200 dark:border-gray-700" />
+
+          {/* Inner spinning gradient */}
+          <div className="absolute inset-0 animate-[spin_1.5s_linear_infinite] rounded-full border-[3px] border-transparent border-t-violet-500 dark:border-t-violet-400" />
+        </div>
+      </div>
+      <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        Searching for flights...
+      </h3>
+      <p className="text-gray-600 dark:text-gray-400">
+        This might take a few moments
+      </p>
     </div>
   );
 }
@@ -384,6 +397,7 @@ function DetailedFlightCard({
             target="_blank"
             rel="noopener noreferrer"
             className="button-animation-subtle group relative mt-4 inline-flex w-full items-center justify-center overflow-hidden rounded-full bg-black px-3 py-2 text-sm font-semibold text-white transition-all hover:bg-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800 md:px-4 md:py-2.5"
+            aria-label={`Book flight from ${flight.outbound.origin} to ${flight.outbound.destination} for €${Math.round(flight.totalPrice)}`}
           >
             <span className="flex items-center">
               Book Flight
@@ -394,6 +408,8 @@ function DetailedFlightCard({
                 fill="none"
                 className="ml-2 h-4 w-4 transform transition-all duration-500 ease-pop group-hover:translate-x-1"
                 xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                role="presentation"
               >
                 <path
                   d="M13.553 11.5L8.5 19.5L6.5 19.5L9.026 11.5L3.666 11.5L2 14.5L0.499999 14.5L1.5 10L0.5 5.5L2 5.5L3.667 8.5L9.027 8.5L6.5 0.499999L8.5 0.499999L13.553 8.5L19 8.5C19.3978 8.5 19.7794 8.65804 20.0607 8.93934C20.342 9.22064 20.5 9.60218 20.5 10C20.5 10.3978 20.342 10.7794 20.0607 11.0607C19.7794 11.342 19.3978 11.5 19 11.5L13.553 11.5Z"
@@ -549,6 +565,62 @@ interface ScrollState {
   highlightedFlightId: string | null;
 }
 
+// Add this new component near the top of the file
+function NoResultsMessage({ searchParams }: { searchParams?: SearchParams }) {
+  return (
+    <div className="mx-auto flex max-w-3xl flex-col items-center justify-center rounded-3xl border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
+      <div className="mb-4">
+        <svg
+          className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        No flights found
+      </h3>
+      <p className="mb-4 text-gray-600 dark:text-gray-400">
+        We couldn't find any flights matching your criteria. Here are some
+        suggestions:
+      </p>
+      <ul className="mb-6 list-inside list-disc text-left text-sm text-gray-600 dark:text-gray-400">
+        <li>Try different dates</li>
+        <li>Expand your search to include more airports</li>
+        <li>Consider increasing your maximum price</li>
+        <li>Try searching for different destinations</li>
+      </ul>
+      {/*<div className="text-sm text-gray-500 dark:text-gray-500">
+        Search parameters:
+        <div className="mt-2 space-y-1">
+          {searchParams && (
+            <>
+              <div>
+                Dates: {searchParams.startDate} - {searchParams.endDate}
+              </div>
+              <div>From: {searchParams.originAirports.join(", ")}</div>
+              <div>To: {searchParams.wantedCountries.join(", ")}</div>
+              <div>Max price: €{searchParams.maxPrice}</div>
+              <div>
+                Stay duration: {searchParams.minDays}-{searchParams.maxDays}{" "}
+                days
+              </div>
+            </>
+          )}
+        </div>
+      </div>*/}
+    </div>
+  );
+}
+
 // Update the main FlightResults component
 export function FlightResults({
   flights,
@@ -570,6 +642,14 @@ export function FlightResults({
     highlightedCity: null,
     highlightedFlightId: null,
   });
+
+  // Add debug state
+  const [debugInfo, setDebugInfo] = useState<{
+    messages: string[];
+    error?: string;
+  }>({ messages: [] });
+
+  const [noFlightsMessage, setNoFlightsMessage] = useState<string | null>(null);
 
   // Construct search URL
   useEffect(() => {
@@ -596,28 +676,54 @@ export function FlightResults({
     const eventSource = new EventSource(searchUrl);
     const flights: Flight[] = [];
 
+    // Add event handlers for debugging
+    eventSource.onopen = () => {
+      setDebugInfo((prev) => ({
+        ...prev,
+        messages: [...prev.messages, "Connection opened"],
+      }));
+    };
+
+    eventSource.onerror = (error) => {
+      setDebugInfo((prev) => ({
+        ...prev,
+        error: "Connection error occurred",
+        messages: [...prev.messages, "Connection error occurred"],
+      }));
+    };
+
     eventSource.onmessage = (event) => {
       if (event.data === "END") {
         eventSource.close();
         return;
       }
 
-      const flight = JSON.parse(event.data);
-      flights.push(flight);
-      setStreamedFlights([...flights]);
+      try {
+        const data = JSON.parse(event.data);
+        flights.push(data);
+        setStreamedFlights([...flights]);
+      } catch (error) {
+        setDebugInfo((prev) => ({
+          ...prev,
+          error: "Error parsing flight data",
+          messages: [...prev.messages, `Parse error: ${error}`],
+        }));
+      }
     };
 
-    return () => eventSource.close();
+    return () => {
+      eventSource.close();
+    };
   }, [searchParams, adults, teens, children, infants]);
 
+  // Show loading state
   if (isLoading && streamedFlights.length === 0) {
     return <LoadingIndicator />;
   }
 
-  if (!isLoading && !flights.length) {
-    return (
-      <p className="text-gray-600">No flights found matching your criteria.</p>
-    );
+  // Only show no results if we have no flights AND we're not loading
+  if (streamedFlights.length === 0 && !isLoading) {
+    return <NoResultsMessage searchParams={searchParams} />;
   }
 
   // Group flights by country and city

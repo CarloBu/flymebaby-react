@@ -3,9 +3,18 @@ import '../styles/globals.css';
 
 interface Props {
 	title: string;
+	description?: string;
 }
 
-const { title } = Astro.props;
+const {
+	title,
+	description = 'Find the best Ryanair flight deals. Compare prices and book cheap flights directly through our flight search engine.',
+} = Astro.props;
+
+// Generate canonical URL with fallback
+const canonicalURL = Astro.site
+	? new URL(Astro.url.pathname, Astro.site)
+	: Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -13,28 +22,96 @@ const { title } = Astro.props;
 	<head>
 		<meta charset='UTF-8' />
 		<meta
-			name='description'
-			content='Flight Search Application'
-		/>
-		<meta
 			name='viewport'
 			content='width=device-width'
 		/>
+
+		<!-- Primary Meta Tags -->
+		<title>{title} | Best Ryanair Flight Deals</title>
+		<meta
+			name='title'
+			content={`${title} | Best Ryanair Flight Deals`}
+		/>
+		<meta
+			name='description'
+			content={description}
+		/>
+
+		<!-- Open Graph / Facebook -->
+		<meta
+			property='og:type'
+			content='website'
+		/>
+		<meta
+			property='og:url'
+			content={canonicalURL}
+		/>
+		<meta
+			property='og:title'
+			content={`${title} | Best Ryanair Flight Deals`}
+		/>
+		<meta
+			property='og:description'
+			content={description}
+		/>
+		<meta
+			property='og:image'
+			content='/og-image.jpg'
+		/>
+
+		<!-- Twitter -->
+		<meta
+			property='twitter:card'
+			content='summary_large_image'
+		/>
+		<meta
+			property='twitter:url'
+			content={canonicalURL}
+		/>
+		<meta
+			property='twitter:title'
+			content={`${title} | Best Ryanair Flight Deals`}
+		/>
+		<meta
+			property='twitter:description'
+			content={description}
+		/>
+		<meta
+			property='twitter:image'
+			content='/og-image.jpg'
+		/>
+
+		<!-- Canonical URL -->
+		<link
+			rel='canonical'
+			href={canonicalURL}
+		/>
+
+		<!-- Favicon -->
 		<link
 			rel='icon'
 			type='image/svg+xml'
 			href='/favicon.svg'
 		/>
+		<link
+			rel='apple-touch-icon'
+			sizes='180x180'
+			href='/apple-touch-icon.png'
+		/>
+
 		<meta
 			name='generator'
 			content={Astro.generator}
 		/>
-		<title>{title}</title>
+
+		<!-- Fonts -->
 		<link
 			href='https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap'
 			rel='stylesheet'
 		/>
-		<script is:inline>
+
+		<!-- Theme Script -->
+		<!--<script is:inline>
 			const theme = (() => {
 				if (
 					typeof localStorage !== 'undefined' &&
@@ -52,6 +129,24 @@ const { title } = Astro.props;
 				document.documentElement.classList.add('dark');
 			} else {
 				document.documentElement.classList.remove('dark');
+			}
+		</script>-->
+
+		<!-- Structured Data -->
+		<script type='application/ld+json'>
+			{
+				"@context": "https://schema.org",
+				"@type": "WebApplication",
+				"name": "Flight Search - Best Ryanair Deals",
+				"description": "Find the best Ryanair flight deals. Compare prices and book cheap flights directly through our flight search engine.",
+				"url": "https://flymebaby.oaksun.studio",
+				"applicationCategory": "TravelApplication",
+				"operatingSystem": "Any",
+				"offers": {
+					"@type": "Offer",
+					"price": "0",
+					"priceCurrency": "EUR"
+				}
 			}
 		</script>
 	</head>

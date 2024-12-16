@@ -1,0 +1,32 @@
+# www.robotstxt.org/
+# Allow crawling of all content
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://flymebaby.oaksun.studio/sitemap.xml
+
+# Disallow sensitive directories
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*?*
+
+# Crawl-delay for specific bots
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Googlebot-Image
+Allow: /
+Crawl-delay: 1
+
+# Block specific bots if needed
+User-agent: BadBot
+Disallow: / 

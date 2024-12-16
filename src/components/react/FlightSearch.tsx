@@ -395,17 +395,38 @@ export default function FlightSearch() {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      // Close any active EventSource connections when component unmounts
+      const elements = document.getElementsByTagName("event-source");
+      for (let i = 0; i < elements.length; i++) {
+        const element = elements[i] as any;
+        if (element.close) {
+          element.close();
+        }
+      }
+    };
+  }, []);
+
   return (
     <div className="mx-auto max-w-5xl rounded-lg bg-white p-3 dark:bg-gray-900 sm:p-6">
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-8"
+        role="search"
+        aria-label="Flight search form"
+      >
         <input type="hidden" name="tripType" value={tripType} />
         <input type="hidden" name="adults" value={adults} />
         <input type="hidden" name="children" value={children} />
 
         <div className="items-left flex flex-col gap-6 text-lg leading-relaxed md:items-center">
-          {/* First line - Trip type and passengers */}
-          <div className="flex scale-90 flex-wrap items-center gap-2 md:scale-100">
-            I'm looking for a
+          <div
+            className="flex scale-90 flex-wrap items-center gap-2 md:scale-100"
+            role="group"
+            aria-labelledby="trip-type-group"
+          >
+            <span id="trip-type-group">I'm looking for a</span>
             <BaseModal
               options={[
                 { value: "return", label: "return" },
@@ -415,13 +436,16 @@ export default function FlightSearch() {
               onChange={(value) =>
                 updateFormForTripType(value as "oneWay" | "return")
               }
+              aria-label="Select trip type"
             />
-            flight
+            <span>flight</span>
           </div>
 
           <motion.div
             layout="position"
             className="layout-animation flex scale-90 flex-wrap items-center gap-2 md:scale-100"
+            role="group"
+            aria-label="Passenger selection"
           >
             for
             <NumberModal
@@ -459,14 +483,16 @@ export default function FlightSearch() {
             <BubbleModal
               onAddPassenger={handleAddPassenger}
               selectedTypes={passengers.map((p) => p.type)}
+              aria-label="Add passenger type"
             />
           </motion.div>
-          {/* Second line - Locations */}
+
           <PopMotion
             key="locations-section"
             className="flex flex-wrap items-center gap-2"
+            aria-label="Location selection"
           >
-            from
+            <span id="origin-label">from</span>
             <span className="inline-block transition-all">
               <MultiCombobox
                 options={airports}
@@ -476,9 +502,10 @@ export default function FlightSearch() {
                 searchPlaceholder="Search airports..."
                 showCode={true}
                 className="min-w-[11.5rem]"
+                aria-labelledby="origin-label"
               />
             </span>
-            to
+            <span id="destination-label">to</span>
             <span className="inline-block transition-all">
               <MultiCombobox
                 options={countries.map((country) => ({
@@ -492,24 +519,30 @@ export default function FlightSearch() {
                 showAllOption={true}
                 allOptionText="All Countries"
                 className="min-w-[12rem]"
+                aria-labelledby="destination-label"
               />
             </span>
           </PopMotion>
-          {/* Third line - Dates */}
-          <div className="flex flex-wrap items-center gap-2">
-            sometime between
+
+          <div
+            className="flex flex-wrap items-center gap-2"
+            role="group"
+            aria-label="Date selection"
+          >
+            <span id="date-range-label">sometime between</span>
             <DatePickerWithRange
               dateRange={dateRange}
               onDateRangeChange={setDateRange}
               className="w-auto"
+              aria-labelledby="date-range-label"
             />
           </div>
-          {/* Fourth line - Duration */}
 
           {tripType === "return" && (
             <PopMotion
               key="duration-section"
               className="layout-animation flex flex-wrap items-center gap-2"
+              aria-label="Trip duration selection"
               onAnimationComplete={() => {
                 if (!tripType.includes("return")) {
                   setMinDays(0);
@@ -517,7 +550,7 @@ export default function FlightSearch() {
                 }
               }}
             >
-              for
+              <span id="min-days-label">for</span>
               <NumberModal
                 value={minDays}
                 onChange={setMinDays}
@@ -525,8 +558,9 @@ export default function FlightSearch() {
                 plural="days"
                 min={1}
                 max={maxDays}
+                aria-labelledby="min-days-label"
               />
-              to
+              <span id="max-days-label">to</span>
               <NumberModal
                 value={maxDays}
                 onChange={setMaxDays}
@@ -534,36 +568,50 @@ export default function FlightSearch() {
                 plural="days"
                 min={minDays}
                 max={90}
+                aria-labelledby="max-days-label"
               />
-              trip
+              <span>trip</span>
             </PopMotion>
           )}
 
-          <div className="flex flex-wrap items-center gap-2">
-            with a maximum budget of
+          <div
+            className="flex flex-wrap items-center gap-2"
+            aria-label="Budget selection"
+          >
+            <span id="price-label">with a maximum budget of</span>
             <PriceModal
               value={maxPrice}
               onChange={setMaxPrice}
               min={0}
               max={10000}
+              aria-labelledby="price-label"
             />
           </div>
         </div>
+
         <div className="text-center">
           <button
             type="submit"
-            className="select-nonemt-8 button-animation inline-flex items-center justify-center rounded-full bg-black px-9 py-5 text-base font-medium text-white hover:bg-gray-700 focus:outline-none dark:bg-white dark:text-black"
+            className="button-animation inline-flex select-none items-center justify-center rounded-full bg-black px-9 py-5 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             disabled={loading}
+            aria-busy={loading}
+            aria-label={
+              loading ? "Searching for flights" : "Search for flights"
+            }
           >
             {loading ? "Searching..." : "Find Flights"}
           </button>
         </div>
       </form>
 
-      <div className="mt-8 space-y-4">
-        {error && <p className="text-red-600">{error}</p>}
+      <div className="mt-8 space-y-4" role="region" aria-label="Search results">
+        {error && (
+          <p className="text-red-600" role="alert" aria-live="assertive">
+            {error}
+          </p>
+        )}
 
-        <div>
+        <div aria-live="polite" aria-busy={loading} aria-atomic="true">
           {flights.length > 0 && searchParams && (
             <FlightResults
               flights={flights}

@@ -2,9 +2,15 @@
 import Layout from '../layouts/Layout.astro';
 import FlightSearch from '../components/react/FlightSearch';
 import { ThemeToggle } from '../components/ThemeToggle';
+
+const pageTitle = 'Flight Search';
+const pageDescription =
+	'Search and compare the best Ryanair flight deals. Find cheap flights to your favorite destinations with our easy-to-use flight search engine.';
 ---
 
-<Layout title='Flight Search'>
+<Layout
+	title={pageTitle}
+	description={pageDescription}>
 	<script is:inline>
 		const getThemePreference = () => {
 			if (

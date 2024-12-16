@@ -160,7 +160,7 @@ export function MultiCombobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "flex w-full min-w-40 select-none items-center justify-start gap-2 whitespace-nowrap rounded-full bg-orange-custom px-3 py-6 text-base text-white shadow-orange-shadow transition-all button-animation-subtle hover:bg-orange-custom hover:text-white hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-custom dark:hover:text-white dark:hover:shadow-orange-hover-shadow",
+            "button-animation-subtle flex w-full min-w-40 select-none items-center justify-start gap-2 whitespace-nowrap rounded-full bg-orange-custom px-3 py-6 text-base text-white shadow-orange-shadow transition-all hover:bg-orange-custom hover:text-white hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-custom dark:hover:text-white dark:hover:shadow-orange-hover-shadow",
             className,
           )}
         >
@@ -182,7 +182,7 @@ export function MultiCombobox({
               className="mb-2 rounded-full bg-gray-100/80 py-3 pl-9 pr-4 text-base text-gray-900 transition-all placeholder:text-gray-500 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400"
             />
           </div>
-          <CommandList className="mt-1 max-h-80 overflow-y-auto px-1 transition-all scrollbar-thin">
+          <CommandList className="mt-1 max-h-40 overflow-y-auto px-1 transition-all scrollbar-thin sm:max-h-80">
             <CommandEmpty className="p-2 text-center text-gray-500 dark:text-gray-400">
               {emptyText}
             </CommandEmpty>
