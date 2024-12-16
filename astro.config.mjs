@@ -13,8 +13,5 @@ export default defineConfig({
     }),
     react(),
   ],
-  output: "server",
-  server: {
-    host: true,
-  },
+  output: "static",
 });
