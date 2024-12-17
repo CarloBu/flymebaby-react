@@ -717,7 +717,7 @@ export function FlightResults({
       if (cityElement) {
         cityElement.scrollIntoView({
           behavior: "smooth",
-          block: "center",
+          block: "start",
         });
       }
     }, 100);

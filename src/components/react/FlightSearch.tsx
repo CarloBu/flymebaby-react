@@ -53,20 +53,6 @@ interface ApiResponse {
   message?: string;
 }
 
-const DEFAULT_SEARCH_PREFERENCES = {
-  tripType: "return" as const,
-  adults: 1,
-  teens: 0,
-  children: 0,
-  infants: 0,
-  maxPrice: 550,
-  minDays: 5,
-  maxDays: 7,
-  originAirports: [] as string[],
-  wantedCountries: [] as string[],
-  dateRange: undefined as DateRange | undefined,
-};
-
 const fetchWithTimeout = async (url: string, timeout = 5000) => {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -104,8 +90,8 @@ export default function FlightSearch() {
   const [infants, setInfants] = useState(0);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [maxPrice, setMaxPrice] = useState<number>(1000);
-  const [minDays, setMinDays] = useState<number>(3);
+  const [maxPrice, setMaxPrice] = useState<number>(550);
+  const [minDays, setMinDays] = useState<number>(5);
   const [maxDays, setMaxDays] = useState<number>(7);
   const [selectedOrigins, setSelectedOrigins] = useState<string[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
@@ -182,17 +168,17 @@ export default function FlightSearch() {
     const savedData = localStorage.getItem("flightSearchPreferences");
 
     if (!savedData) {
-      setTripType(DEFAULT_SEARCH_PREFERENCES.tripType);
-      setAdults(DEFAULT_SEARCH_PREFERENCES.adults);
-      setTeens(DEFAULT_SEARCH_PREFERENCES.teens);
-      setChildren(DEFAULT_SEARCH_PREFERENCES.children);
-      setInfants(DEFAULT_SEARCH_PREFERENCES.infants);
-      setMaxPrice(DEFAULT_SEARCH_PREFERENCES.maxPrice);
-      setMinDays(DEFAULT_SEARCH_PREFERENCES.minDays);
-      setMaxDays(DEFAULT_SEARCH_PREFERENCES.maxDays);
-      setSelectedOrigins(DEFAULT_SEARCH_PREFERENCES.originAirports);
-      setSelectedCountries(DEFAULT_SEARCH_PREFERENCES.wantedCountries);
-      setDateRange(DEFAULT_SEARCH_PREFERENCES.dateRange);
+      setTripType("return");
+      setAdults(1);
+      setTeens(0);
+      setChildren(0);
+      setInfants(0);
+      setMaxPrice(550);
+      setMinDays(5);
+      setMaxDays(7);
+      setSelectedOrigins([]);
+      setSelectedCountries([]);
+      setDateRange(undefined);
       setPassengers([]);
       return;
     }
@@ -337,6 +323,12 @@ export default function FlightSearch() {
       cleanupRef.current = cleanup;
 
       eventSource.onerror = (error) => {
+        if (flights.length > 0 || !loading) {
+          cleanup();
+          setLoading(false);
+          return;
+        }
+
         console.error("EventSource failed:", error);
         cleanup();
         setLoading(false);
