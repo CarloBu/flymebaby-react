@@ -7,6 +7,7 @@ import {
   INFANT_SEAT_PRICE,
 } from "../../utils/flightUtils";
 import { useState, useEffect } from "react";
+import { Frown } from "lucide-react";
 
 interface FlightResultsProps {
   flights: Flight[];
@@ -33,16 +34,13 @@ interface SearchParams {
   infants: number;
 }
 
-// Add a loading indicator component
-function LoadingIndicator() {
+// Add export to the LoadingIndicator component
+export function LoadingIndicator() {
   return (
     <div className="mx-auto flex max-w-3xl select-none flex-col items-center justify-center rounded-3xl border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
       <div className="mb-6 flex items-center justify-center">
         <div className="relative h-16 w-16">
-          {/* Outer spinning circle */}
           <div className="absolute inset-0 animate-[spin_2s_linear_infinite] rounded-full border-[3px] border-gray-200 dark:border-gray-700" />
-
-          {/* Inner spinning gradient */}
           <div className="absolute inset-0 animate-[spin_1.5s_linear_infinite] rounded-full border-[3px] border-transparent border-t-violet-500 dark:border-t-violet-400" />
         </div>
       </div>
@@ -566,24 +564,18 @@ interface ScrollState {
 }
 
 // Add this new component near the top of the file
-function NoResultsMessage({ searchParams }: { searchParams?: SearchParams }) {
+export function NoResultsMessage({
+  searchParams,
+}: {
+  searchParams?: SearchParams | null;
+}) {
   return (
     <div className="mx-auto flex max-w-3xl flex-col items-center justify-center rounded-3xl border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
       <div className="mb-4">
-        <svg
-          className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+        <Frown
+          className="h-12 w-12 text-gray-700 dark:text-gray-400"
+          strokeWidth={1.2}
+        />
       </div>
       <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
         No flights found
@@ -631,105 +623,23 @@ export function FlightResults({
   isLoading = false,
   searchParams,
 }: FlightResultsProps) {
-  const [streamedFlights, setStreamedFlights] = useState<Flight[]>([]);
-  const [openCountries, setOpenCountries] = useState<CountryOpenState>({});
   const [expandedCities, setExpandedCities] = useState<Record<string, boolean>>(
     {},
   );
-  const [highlightedCity, setHighlightedCity] = useState<string | null>(null);
+  const [openCountries, setOpenCountries] = useState<CountryOpenState>({});
   const [scrollState, setScrollState] = useState<ScrollState>({
     highlightedCountry: null,
     highlightedCity: null,
     highlightedFlightId: null,
   });
 
-  // Add debug state
-  const [debugInfo, setDebugInfo] = useState<{
-    messages: string[];
-    error?: string;
-  }>({ messages: [] });
-
-  const [noFlightsMessage, setNoFlightsMessage] = useState<string | null>(null);
-
-  // Construct search URL
-  useEffect(() => {
-    if (!searchParams) return;
-
-    const API_URL =
-      import.meta.env.PUBLIC_API_URL || "https://flymebaby-python.onrender.com";
-
-    const searchParamsForUrl = {
-      ...searchParams,
-      originAirports: searchParams.originAirports.join(","),
-      wantedCountries: searchParams.wantedCountries.join(","),
-      maxPrice: searchParams.maxPrice.toString(),
-      minDays: searchParams.minDays.toString(),
-      maxDays: searchParams.maxDays.toString(),
-      adults: adults.toString(),
-      teens: teens.toString(),
-      children: children.toString(),
-      infants: infants.toString(),
-    };
-
-    const searchUrl = `${API_URL}/api/search-flights?${new URLSearchParams(searchParamsForUrl)}`;
-
-    const eventSource = new EventSource(searchUrl);
-    const flights: Flight[] = [];
-
-    // Add event handlers for debugging
-    eventSource.onopen = () => {
-      setDebugInfo((prev) => ({
-        ...prev,
-        messages: [...prev.messages, "Connection opened"],
-      }));
-    };
-
-    eventSource.onerror = (error) => {
-      setDebugInfo((prev) => ({
-        ...prev,
-        error: "Connection error occurred",
-        messages: [...prev.messages, "Connection error occurred"],
-      }));
-    };
-
-    eventSource.onmessage = (event) => {
-      if (event.data === "END") {
-        eventSource.close();
-        return;
-      }
-
-      try {
-        const data = JSON.parse(event.data);
-        flights.push(data);
-        setStreamedFlights([...flights]);
-      } catch (error) {
-        setDebugInfo((prev) => ({
-          ...prev,
-          error: "Error parsing flight data",
-          messages: [...prev.messages, `Parse error: ${error}`],
-        }));
-      }
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, [searchParams, adults, teens, children, infants]);
-
-  // Show loading state
-  if (isLoading && streamedFlights.length === 0) {
-    return <LoadingIndicator />;
-  }
-
-  // Only show no results if we have no flights AND we're not loading
-  if (streamedFlights.length === 0 && !isLoading) {
-    return <NoResultsMessage searchParams={searchParams} />;
-  }
+  // Calculate global price range once
+  const globalMinPrice = Math.min(...flights.map((f) => f.totalPrice));
+  const globalMaxPrice = Math.max(...flights.map((f) => f.totalPrice));
 
   // Group flights by country and city
-  const groupedFlights = streamedFlights.reduce(
+  const groupedFlights = flights.reduce(
     (acc, flight) => {
-      // Get country from the destination airport's full name
       const destinationParts = flight.outbound.destinationFull.split(", ");
       const country =
         destinationParts.length > 1
@@ -868,10 +778,6 @@ export function FlightResults({
     }, 2000);
   };
 
-  const globalMinPrice = Math.min(...streamedFlights.map((f) => f.totalPrice));
-  const globalMaxPrice = Math.max(...streamedFlights.map((f) => f.totalPrice));
-
-  // Add this handler
   const handleFlightHighlight = (flightId: string | null) => {
     setScrollState((prev) => ({
       ...prev,
@@ -884,12 +790,12 @@ export function FlightResults({
       <div className="mb-4 h-8 text-2xl font-bold">
         {isLoading ? (
           <p className="text-gray-600">
-            Found {streamedFlights.length} flights so far...
+            Found {flights.length} flights so far...
           </p>
-        ) : streamedFlights.length > 0 ? (
+        ) : flights.length > 0 ? (
           <p className="text-gray-600 dark:text-gray-400">
-            Found {streamedFlights.length} flight
-            {streamedFlights.length !== 1 ? "s" : ""} to explore
+            Found {flights.length} flight
+            {flights.length !== 1 ? "s" : ""} to explore
           </p>
         ) : null}
       </div>

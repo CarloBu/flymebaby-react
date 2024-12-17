@@ -1,8 +1,12 @@
-import React, { useEffect, useState, FormEvent } from "react";
+import React, { useEffect, useState, FormEvent, useRef } from "react";
 import { airports } from "../../data/airports";
 import { countries } from "../../data/countries";
 import type { Flight } from "../../types/flight";
-import { FlightResults } from "./FlightResults";
+import {
+  FlightResults,
+  NoResultsMessage,
+  LoadingIndicator,
+} from "./FlightResults";
 import { BaseModal } from "./modals/BaseModal";
 import { NumberModal } from "./modals/NumberModal";
 import { BubbleModal } from "./modals/BubbleModal";
@@ -13,6 +17,7 @@ import { format } from "date-fns";
 import { MultiCombobox } from "@/components/react/modals/multi-combobox";
 import { motion } from "framer-motion";
 import { PopMotion } from "@/components/react/motion/PopMotion";
+import { PlaneTakeoff, PlaneLanding, CalendarFold } from "lucide-react";
 
 interface SearchParams {
   tripType: "oneWay" | "return";
@@ -43,6 +48,11 @@ interface PassengerType {
   count: number;
 }
 
+interface ApiResponse {
+  type?: string;
+  message?: string;
+}
+
 const DEFAULT_SEARCH_PREFERENCES = {
   tripType: "return" as const,
   adults: 1,
@@ -55,6 +65,32 @@ const DEFAULT_SEARCH_PREFERENCES = {
   originAirports: [] as string[],
   wantedCountries: [] as string[],
   dateRange: undefined as DateRange | undefined,
+};
+
+const fetchWithTimeout = async (url: string, timeout = 5000) => {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(id);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
+};
+
+const createEventSourceWithCleanup = (url: string) => {
+  const eventSource = new EventSource(url, { withCredentials: false });
+
+  const cleanup = () => {
+    if (eventSource && eventSource.readyState !== EventSource.CLOSED) {
+      eventSource.close();
+    }
+  };
+
+  return { eventSource, cleanup };
 };
 
 export default function FlightSearch() {
@@ -88,18 +124,18 @@ export default function FlightSearch() {
     from: startDate ? new Date(startDate) : undefined,
     to: endDate ? new Date(endDate) : undefined,
   });
+  const [noFlightsFound, setNoFlightsFound] = useState(false);
 
-  const fadeInOut = {
-    initial: { opacity: 0, scale: 0.8, y: -10 },
-    animate: { opacity: 1, scale: 1, y: 0 },
-    exit: { opacity: 0, scale: 0.8, y: -10 },
-    transition: {
-      type: "spring",
-      stiffness: 500,
-      damping: 30,
-      mass: 1,
-    },
-  };
+  const cleanupRef = React.useRef<(() => void) | null>(null);
+  const submitResultsFold = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (cleanupRef.current) {
+        cleanupRef.current();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     loadFormData();
@@ -235,6 +271,15 @@ export default function FlightSearch() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setFlights([]);
+    setLoading(true);
+    setError(null);
+    setNoFlightsFound(false);
+
+    if (cleanupRef.current) {
+      cleanupRef.current();
+    }
+
     const newSearchParams: SearchParams = {
       tripType,
       startDate,
@@ -250,10 +295,31 @@ export default function FlightSearch() {
       infants,
     };
 
+    if (selectedOrigins.length === 0) {
+      setError("Please select at least one departure airport");
+      setLoading(false);
+      return;
+    }
+
+    if (selectedCountries.length === 0) {
+      setError("Please select at least one destination country");
+      setLoading(false);
+      return;
+    }
+
+    if (!startDate) {
+      setError("Please select a departure date");
+      setLoading(false);
+      return;
+    }
+
+    if (tripType === "return" && !endDate) {
+      setError("Please select a return date");
+      setLoading(false);
+      return;
+    }
+
     setSearchParams(newSearchParams);
-    setFlights([]);
-    setLoading(true);
-    setError(null);
 
     try {
       const searchParamsForUrl = {
@@ -262,54 +328,73 @@ export default function FlightSearch() {
         wantedCountries: newSearchParams.wantedCountries.join(","),
       };
 
-      //const apiUrl =
-      //import.meta.env.PUBLIC_API_URL || "http://192.168.1.149:5000";
-      const apiUrl =
-        import.meta.env.PUBLIC_API_URL ||
-        "https://flymebaby-python.onrender.com";
-      const eventSource = new EventSource(
-        `${apiUrl}/api/search-flights?${new URLSearchParams(
-          searchParamsForUrl as any,
-        )}`,
-      );
+      const apiUrl = "https://flymebaby-python.onrender.com";
+      const searchUrl = `${apiUrl}/api/search-flights?${new URLSearchParams(
+        searchParamsForUrl as any,
+      )}`;
+
+      const { eventSource, cleanup } = createEventSourceWithCleanup(searchUrl);
+      cleanupRef.current = cleanup;
+
+      eventSource.onerror = (error) => {
+        console.error("EventSource failed:", error);
+        cleanup();
+        setLoading(false);
+        setError(
+          "Connection to flight search service was lost. Please try again.",
+        );
+      };
 
       eventSource.onmessage = (event) => {
+        console.log("Raw API response:", event.data);
+        setTimeout(() => {
+          submitResultsFold.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
         if (event.data === "END") {
-          //console.log("Search completed");
-          eventSource.close();
+          cleanup();
           setLoading(false);
+
+          if (flights.length === 0) {
+            setNoFlightsFound(true);
+          }
           return;
         }
 
-        const flight = JSON.parse(event.data);
-        //console.log("Received flight:", flight);
+        try {
+          const data = JSON.parse(event.data) as ApiResponse | Flight;
 
-        setFlights((prevFlights) => {
-          const newFlights = [...prevFlights, flight];
-          return newFlights.sort((a, b) => a.totalPrice - b.totalPrice);
-        });
-      };
+          if ("type" in data && data.type === "NO_FLIGHTS") {
+            setNoFlightsFound(true);
+            cleanup();
+            setLoading(false);
+            return;
+          }
 
-      eventSource.onerror = (error) => {
-        eventSource.close();
-        setLoading(false);
-        setError(
-          "Unable to connect to flight search service. Please try again later.",
-        );
-        console.error("SSE Connection Error:", error);
-      };
+          setFlights((prevFlights) => {
+            const newFlights = [...prevFlights, data as Flight];
+            return newFlights.sort((a, b) => a.totalPrice - b.totalPrice);
+          });
 
-      eventSource.onopen = () => {
-        //console.log("SSE connection opened");
-      };
-
-      return () => {
-        eventSource.close();
+          if (loading) {
+            setLoading(false);
+          }
+        } catch (error) {
+          console.error("Error parsing flight data:", error);
+          setError("Error processing flight data. Please try again.");
+          cleanup();
+          setLoading(false);
+        }
       };
     } catch (error) {
-      //console.error("Search Error:", error);
       setLoading(false);
-      setError("Error searching flights. Please try again.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred. Please try again.",
+      );
     }
   };
 
@@ -394,19 +479,6 @@ export default function FlightSearch() {
         break;
     }
   };
-
-  useEffect(() => {
-    return () => {
-      // Close any active EventSource connections when component unmounts
-      const elements = document.getElementsByTagName("event-source");
-      for (let i = 0; i < elements.length; i++) {
-        const element = elements[i] as any;
-        if (element.close) {
-          element.close();
-        }
-      }
-    };
-  }, []);
 
   return (
     <div className="mx-auto max-w-5xl rounded-lg bg-white p-3 dark:bg-gray-900 sm:p-6">
@@ -588,7 +660,7 @@ export default function FlightSearch() {
             />
           </div>
         </div>
-
+        <div ref={submitResultsFold} className="h-1 w-full"></div>
         <div className="text-center">
           <button
             type="submit"
@@ -604,14 +676,36 @@ export default function FlightSearch() {
         </div>
       </form>
 
-      <div className="mt-8 space-y-4" role="region" aria-label="Search results">
+      <div
+        className="mx-auto mt-8 flex flex-col items-center justify-center space-y-4"
+        role="region"
+        aria-label="Search results"
+      >
         {error && (
-          <p className="text-red-600" role="alert" aria-live="assertive">
-            {error}
-          </p>
+          <div
+            className="flex max-w-2xl flex-col items-center justify-center rounded-lg bg-red-50 px-12 py-6 dark:bg-red-900/20"
+            role="alert"
+          >
+            {error.toLowerCase().includes("departure airport") ? (
+              <PlaneTakeoff className="text-red-700 dark:text-red-200" />
+            ) : error.toLowerCase().includes("destination country") ? (
+              <PlaneLanding className="text-red-700 dark:text-red-200" />
+            ) : error.toLowerCase().includes("date") ? (
+              <CalendarFold className="text-red-700 dark:text-red-200" />
+            ) : null}
+            <div className="mt-3 flex items-center gap-3">
+              <p className="text-red-700 dark:text-red-200">{error}</p>
+            </div>
+          </div>
         )}
 
         <div aria-live="polite" aria-busy={loading} aria-atomic="true">
+          {loading && flights.length === 0 && <LoadingIndicator />}
+
+          {!loading && noFlightsFound && flights.length === 0 && (
+            <NoResultsMessage searchParams={searchParams} />
+          )}
+
           {flights.length > 0 && searchParams && (
             <FlightResults
               flights={flights}
