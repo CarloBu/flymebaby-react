@@ -488,7 +488,7 @@ export default function FlightSearch() {
           <div
             className="flex scale-90 flex-wrap items-center gap-2 md:scale-100"
             role="group"
-            aria-labelledby="trip-type-group"
+            aria-label="trip-type-group"
           >
             <span id="trip-type-group">I'm looking for a</span>
             <BaseModal
@@ -509,7 +509,6 @@ export default function FlightSearch() {
             layout="position"
             className="layout-animation flex scale-90 flex-wrap items-center gap-2 md:scale-100"
             role="group"
-            aria-label="Passenger selection"
           >
             for
             <NumberModal
@@ -548,13 +547,13 @@ export default function FlightSearch() {
               onAddPassenger={handleAddPassenger}
               selectedTypes={passengers.map((p) => p.type)}
               aria-label="Add passenger type"
+              buttonAriaLabel="Add additional passenger type"
             />
           </motion.div>
 
           <PopMotion
             key="locations-section"
             className="flex flex-wrap items-center gap-2"
-            aria-label="Location selection"
           >
             <span id="origin-label">from</span>
             <span className="inline-block transition-all">
@@ -566,7 +565,7 @@ export default function FlightSearch() {
                 searchPlaceholder="Search airports..."
                 showCode={true}
                 className="min-w-[11.5rem]"
-                aria-labelledby="origin-label"
+                ariaLabel="Open departure airports selection"
               />
             </span>
             <span id="destination-label">to</span>
@@ -583,22 +582,18 @@ export default function FlightSearch() {
                 showAllOption={true}
                 allOptionText="All Countries"
                 className="min-w-[12rem]"
-                aria-labelledby="destination-label"
+                ariaLabel="Open destination countries selection"
               />
             </span>
           </PopMotion>
 
-          <div
-            className="flex flex-wrap items-center gap-2"
-            role="group"
-            aria-label="Date selection"
-          >
+          <div className="flex flex-wrap items-center gap-2" role="group">
             <span id="date-range-label">sometime between</span>
             <DatePickerWithRange
               dateRange={dateRange}
               onDateRangeChange={setDateRange}
               className="w-auto"
-              aria-labelledby="date-range-label"
+              aria-label="Pick a date range"
             />
           </div>
 
@@ -606,7 +601,6 @@ export default function FlightSearch() {
             <PopMotion
               key="duration-section"
               className="layout-animation flex flex-wrap items-center gap-2"
-              aria-label="Trip duration selection"
               onAnimationComplete={() => {
                 if (!tripType.includes("return")) {
                   setMinDays(0);
@@ -622,7 +616,7 @@ export default function FlightSearch() {
                 plural="days"
                 min={1}
                 max={maxDays}
-                aria-labelledby="min-days-label"
+                aria-label="Minimum trip duration"
               />
               <span id="max-days-label">to</span>
               <NumberModal
@@ -632,23 +626,20 @@ export default function FlightSearch() {
                 plural="days"
                 min={minDays}
                 max={90}
-                aria-labelledby="max-days-label"
+                aria-label="Maximum trip duration"
               />
               <span>trip</span>
             </PopMotion>
           )}
 
-          <div
-            className="flex flex-wrap items-center gap-2"
-            aria-label="Budget selection"
-          >
+          <div className="flex flex-wrap items-center gap-2">
             <span id="price-label">with a maximum budget of</span>
             <PriceModal
               value={maxPrice}
               onChange={setMaxPrice}
               min={0}
               max={10000}
-              aria-labelledby="price-label"
+              aria-label="Set a maximum budget"
             />
           </div>
         </div>
@@ -659,6 +650,7 @@ export default function FlightSearch() {
             className="button-animation inline-flex select-none items-center justify-center rounded-full bg-black px-9 py-5 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             disabled={loading}
             aria-busy={loading}
+            role="button"
             aria-label={
               loading ? "Searching for flights" : "Search for flights"
             }
@@ -691,7 +683,12 @@ export default function FlightSearch() {
           </div>
         )}
 
-        <div aria-live="polite" aria-busy={loading} aria-atomic="true">
+        <div
+          className="w-full"
+          aria-live="polite"
+          aria-busy={loading}
+          aria-atomic="true"
+        >
           {loading && flights.length === 0 && <LoadingIndicator />}
 
           {!loading && noFlightsFound && flights.length === 0 && (

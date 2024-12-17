@@ -20,14 +20,14 @@ interface PassengerType {
 
 interface BubbleModalProps {
   onAddPassenger: (type: PassengerType["type"]) => void;
-  selectedTypes: PassengerType["type"][];
-  className?: string;
+  selectedTypes: string[];
+  buttonAriaLabel: string;
 }
 
 export const BubbleModal = ({
   onAddPassenger,
   selectedTypes,
-  className = "",
+  buttonAriaLabel,
 }: BubbleModalProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -82,9 +82,10 @@ export const BubbleModal = ({
                 <button
                   type="button"
                   className={cn(
-                    "relative left-2 rounded-full bg-gray-900 p-3 text-white button-animation hover:opacity-80 dark:bg-gray-100 dark:text-gray-900",
-                    className,
+                    "button-animation relative left-2 rounded-full bg-gray-900 p-3 text-white hover:opacity-80 dark:bg-gray-100 dark:text-gray-900",
                   )}
+                  aria-label={buttonAriaLabel}
+                  role="button"
                 >
                   <Plus className="h-5 w-5 stroke-[3]" />
                 </button>

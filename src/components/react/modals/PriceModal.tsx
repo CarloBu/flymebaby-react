@@ -82,8 +82,11 @@ export const PriceModal = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <div className="relative inline-flex">
-        <PopoverTrigger asChild>
-          <div className="relative flex min-w-[8rem] cursor-pointer select-none items-center justify-center rounded-full bg-orange-custom px-6 py-3 text-base text-white shadow-orange-shadow button-animation hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-hover-custom dark:hover:shadow-orange-hover-shadow">
+        <PopoverTrigger>
+          <div
+            className="button-animation relative flex min-w-[8rem] cursor-pointer select-none items-center justify-center rounded-full bg-orange-custom px-6 py-3 text-base text-white shadow-orange-shadow hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-hover-custom dark:hover:shadow-orange-hover-shadow"
+            aria-label="Set a maximum budget"
+          >
             <span className="block overflow-hidden">
               <span className="inline-block w-full transition-transform duration-200 ease-in-out">
                 {formatPrice(value)}

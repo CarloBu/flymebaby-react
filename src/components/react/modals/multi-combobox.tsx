@@ -38,6 +38,7 @@ interface MultiComboboxProps {
   allOptionText?: string;
   showCode?: boolean;
   displayFormat?: (option: Option) => string;
+  ariaLabel: string;
 }
 
 export function MultiCombobox({
@@ -52,6 +53,7 @@ export function MultiCombobox({
   allOptionText = "All Items",
   showCode = false,
   displayFormat,
+  ariaLabel,
 }: MultiComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -163,6 +165,7 @@ export function MultiCombobox({
             "button-animation-subtle flex w-full min-w-40 select-none items-center justify-start gap-2 whitespace-nowrap rounded-full bg-orange-custom px-3 py-6 text-base text-white shadow-orange-shadow transition-all hover:bg-orange-custom hover:text-white hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-custom dark:hover:text-white dark:hover:shadow-orange-hover-shadow",
             className,
           )}
+          aria-label={ariaLabel}
         >
           <div className="flex flex-1 flex-wrap gap-1.5 text-base">
             {renderSelectedValues()}

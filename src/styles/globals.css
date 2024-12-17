@@ -26,6 +26,8 @@
   @apply scale-100 select-none transition-all duration-300 ease-pop will-change-transform hover:scale-[1.02] active:scale-[0.98] [backface-visibility:hidden] [transform-style:preserve-3d]
 }
 
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;

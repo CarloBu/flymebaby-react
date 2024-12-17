@@ -98,7 +98,7 @@ function MiniFlightCard({
   const priceColor = getPriceColor(flight.totalPrice, minPrice, maxPrice);
 
   return (
-    <div className="relative m-2 inline-block h-20 w-[9.9rem]">
+    <div className="relative inline-block h-20 w-[9.8rem]">
       {/* SVG Background */}
       <svg
         width="158"
@@ -106,7 +106,7 @@ function MiniFlightCard({
         viewBox="0 0 158 80"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="absolute left-0 top-0 transition-all duration-300"
+        className="absolute left-0 top-0 scale-95 transition-all duration-300 sm:scale-100"
         style={{
           fill: isHovered ? priceColor.backgroundHover : priceColor.background,
           stroke: isHovered
@@ -122,10 +122,10 @@ function MiniFlightCard({
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="absolute left-0 top-0 flex h-20 w-full cursor-pointer flex-col justify-between px-5 py-3"
+        className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col justify-between px-5 py-3"
       >
-        <div className="flex items-center gap-1">
-          <span className="text-[15px] font-medium text-gray-800 dark:text-gray-800">
+        <div className="flex items-center justify-between">
+          <span className="text-[0.938rem] font-medium text-gray-800 dark:text-gray-800">
             {formatDateTime(flight.outbound.departureTime, true)}
           </span>
           {tripType === "return" && (
@@ -145,7 +145,7 @@ function MiniFlightCard({
                   />
                 </svg>
               </span>
-              <span className="text-[15px] font-medium text-gray-800 dark:text-gray-800">
+              <span className="text-[0.938rem] font-medium text-gray-800 dark:text-gray-800">
                 {formatDateTime(flight.inbound.departureTime, true)}
               </span>
             </>
@@ -184,7 +184,7 @@ function MiniCityCard({
   const priceColor = getPriceColor(cityData.minPrice, minPrice, maxPrice);
 
   return (
-    <div className="relative m-2 inline-block h-20 w-[200px]">
+    <div className="relative m-2 inline-block h-20 w-48">
       {/* SVG Background - Updated path with only left cutout */}
       <svg
         width="200"
@@ -295,6 +295,7 @@ function DetailedFlightCard({
   isHighlighted?: boolean;
   tripType?: "oneWay" | "return";
 }) {
+  const [isHovered, setIsHovered] = useState(false);
   const priceColor = getPriceColor(flight.totalPrice, minPrice, maxPrice);
   const flightId = `${flight.outbound.origin}-${flight.outbound.destination}-${flight.outbound.departureTime}`;
   const infantFee =
@@ -303,16 +304,14 @@ function DetailedFlightCard({
   return (
     <div
       id={`flight-${flightId}`}
-      className={`relative mx-0 my-4 rounded-3xl transition-all duration-200 sm:mx-2 md:mx-8 md:my-8 ${
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`group relative mx-0 my-4 rounded-3xl transition-all duration-200 sm:mx-2 md:mx-8 md:my-8 ${
         isHighlighted ? "ring-2 ring-gray-500 dark:ring-gray-200" : ""
       }`}
     >
-      {/* Dashed border connecting cutouts */}
-      <div className="absolute top-1/2 -z-10 h-[1px] w-full border-b border-dashed border-orange-300 dark:border-gray-400"></div>
-
-      <div className="relative flex flex-col overflow-hidden rounded-3xl border border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50 dark:border-gray-400 dark:bg-gray-800 dark:hover:border-gray-100 dark:hover:bg-gray-600 md:grid md:grid-cols-[2fr,1px,1fr]">
-        {/* Left section - Flight details */}
-        <div className="space-y-4 p-4 md:p-6">
+      <div className="relative flex flex-col overflow-hidden md:grid md:grid-cols-[3fr,0px,14rem]">
+        <div className="space-y-4 rounded-3xl rounded-b-xl border border-slate-100 bg-slate-50 p-4 transition-all duration-300 group-hover:border-slate-200 group-hover:bg-slate-100 dark:bg-slate-800 group-hover:dark:bg-slate-700 md:rounded-3xl md:rounded-r-xl md:p-6">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-200">
@@ -392,16 +391,25 @@ function DetailedFlightCard({
           </div>
         </div>
 
-        {/* Vertical divider */}
-        <div className="hidden bg-gray-200 dark:bg-gray-400 md:block"></div>
+        {/* Vertical divider with cutouts */}
+        <div className="relative hidden md:block">
+          <div className="-m-[1px] h-full w-[2px] border border-dashed border-white dark:border-gray-900"></div>
+        </div>
 
         {/* Horizontal divider for mobile */}
-        <div className="block h-[1px] bg-gray-200 dark:bg-gray-400 md:hidden"></div>
+        <div className="-m-[1px] block h-[2px] border border-dashed border-white dark:border-gray-900 md:hidden"></div>
 
         {/* Right section - Price and booking */}
         <div
-          className="flex flex-col justify-between p-4 md:p-6"
-          style={{ backgroundColor: priceColor.background }}
+          className="flex flex-col justify-between rounded-3xl rounded-t-xl border p-4 transition-all duration-300 md:rounded-3xl md:rounded-l-xl md:p-6"
+          style={{
+            backgroundColor: isHovered
+              ? priceColor.backgroundHover
+              : priceColor.background,
+            borderColor: isHovered
+              ? priceColor.borderColor
+              : priceColor.backgroundHover,
+          }}
         >
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-900">
@@ -440,7 +448,7 @@ function DetailedFlightCard({
             )}
             target="_blank"
             rel="noopener noreferrer"
-            className="button-animation-subtle group relative mt-4 inline-flex w-full items-center justify-center overflow-hidden rounded-full bg-black px-3 py-2 text-sm font-semibold text-white transition-all hover:bg-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800 md:px-4 md:py-2.5"
+            className="button-animation-subtle group/flight-button relative mt-4 inline-flex w-full items-center justify-center overflow-hidden rounded-full bg-black px-3 py-2 text-sm font-semibold text-white transition-all hover:bg-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800 md:px-4 md:py-2.5"
             aria-label={`Book flight from ${flight.outbound.origin} to ${flight.outbound.destination} for €${Math.round(flight.totalPrice)}`}
           >
             <span className="flex items-center">
@@ -450,7 +458,7 @@ function DetailedFlightCard({
                 height="20"
                 viewBox="0 0 21 20"
                 fill="none"
-                className="ml-2 h-4 w-4 transform transition-all duration-500 ease-pop group-hover:translate-x-1"
+                className="ml-2 h-4 w-4 transform transition-all duration-500 ease-pop group-hover/flight-button:translate-x-1"
                 xmlns="http://www.w3.org/2000/svg"
                 aria-hidden="true"
                 role="presentation"
@@ -513,14 +521,14 @@ function CityGroup({
   return (
     <div
       id={`city-group-${city.toLowerCase().replace(/\s+/g, "-")}`}
-      className={`mb-2 rounded-3xl border bg-white p-3 transition-all dark:bg-gray-800 md:mb-4 md:p-6 ${
+      className={`mb-2 rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 max-[450px]:p-2 md:mb-4 md:p-6 ${
         isHighlighted
           ? "border-gray-400 dark:border-gray-400"
           : "border-gray-200 hover:border-gray-400 dark:border-gray-400 dark:hover:border-gray-400"
       }`}
     >
       <div
-        className="mb-3 cursor-pointer text-xl font-semibold text-gray-700 transition-colors hover:text-black dark:text-gray-200 dark:hover:text-gray-400"
+        className="mb-3 cursor-pointer px-2 text-xl font-semibold text-gray-700 transition-colors hover:text-black dark:text-gray-200 dark:hover:text-gray-400 sm:px-0"
         onClick={handleToggle}
       >
         <div className="flex select-none items-center justify-between gap-2">
@@ -544,7 +552,7 @@ function CityGroup({
 
       {/* Mini Cards - Show when collapsed */}
       {!isExpanded && (
-        <div className="mini-cards mt-3 flex flex-wrap">
+        <div className="mini-cards mt-5 flex flex-wrap gap-x-0 gap-y-1 sm:mt-8 sm:gap-x-5 sm:gap-y-4">
           {cityData.flights
             .sort((a, b) => a.totalPrice - b.totalPrice)
             .map((flight, index) => (
@@ -832,7 +840,7 @@ export function FlightResults({
   };
 
   return (
-    <div className="space-y-4 md:space-y-8">
+    <div className="w-fullspace-y-4 md:space-y-8">
       <div className="mb-4 h-8 text-2xl font-bold">
         {isLoading ? (
           <p className="text-gray-600">
@@ -861,7 +869,7 @@ export function FlightResults({
             <div
               key={country}
               id={`country-group-${country.toLowerCase().replace(/\s+/g, "-")}`}
-              className={`rounded-3xl border bg-white p-3 transition-all dark:bg-gray-800 sm:p-6 ${
+              className={`w-full rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 max-[450px]:p-2 sm:p-6 ${
                 scrollState.highlightedCountry === country
                   ? "border-gray-300 dark:border-gray-400"
                   : "border-gray-200 hover:border-gray-300 dark:border-gray-400 dark:hover:border-gray-400"

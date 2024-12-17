@@ -17,6 +17,8 @@ interface NumberModalProps {
   max?: number;
   onRemove?: () => void;
   formatValue?: (value: number) => string;
+  role?: string;
+  "aria-label"?: string;
 }
 
 export const NumberModal = ({
@@ -28,6 +30,8 @@ export const NumberModal = ({
   max = 99,
   onRemove,
   formatValue,
+  role,
+  "aria-label": ariaLabel,
 }: NumberModalProps) => {
   const [open, setOpen] = useState(false);
   const [activeButton, setActiveButton] = useState<"plus" | "minus" | null>(
@@ -90,7 +94,12 @@ export const NumberModal = ({
     <Popover open={open} onOpenChange={setOpen}>
       <div className="group relative inline-flex">
         <PopoverTrigger asChild>
-          <div className="button-animation relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-orange-custom px-6 py-3 text-base text-white shadow-orange-shadow transition-all hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-hover-custom dark:hover:shadow-orange-hover-shadow">
+          <div
+            className="button-animation relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-orange-custom px-6 py-3 text-base text-white shadow-orange-shadow transition-all hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-hover-custom dark:hover:shadow-orange-hover-shadow"
+            role="button"
+            tabIndex={0}
+            aria-label={ariaLabel}
+          >
             <span className="block overflow-hidden">
               <span className="inline-block w-full transition-transform duration-200 ease-in-out">
                 {formatValue
@@ -99,17 +108,25 @@ export const NumberModal = ({
               </span>
             </span>
             {onRemove && (
-              <button
-                type="button"
+              <span
+                role="button"
+                tabIndex={0}
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemove();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onRemove();
+                  }
                 }}
                 aria-label="Remove"
                 className="right-0 top-1/2 -mr-3 ml-1 rounded-full bg-black bg-white/20 p-1 text-white transition-all duration-200 hover:bg-gray-800 hover:text-white dark:bg-black/20 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 <CloseIcon />
-              </button>
+              </span>
             )}
           </div>
         </PopoverTrigger>
