@@ -109,7 +109,9 @@ function MiniFlightCard({
         className="absolute left-0 top-0 transition-all duration-300"
         style={{
           fill: isHovered ? priceColor.backgroundHover : priceColor.background,
-          stroke: isHovered ? priceColor.text : priceColor.borderColor,
+          stroke: isHovered
+            ? priceColor.borderColor
+            : priceColor.backgroundHover,
         }}
       >
         <path d="M154.576 49.9734L154.611 49.985L154.646 49.9916C156.184 50.2769 157.3 51.5699 157.3 53.125V69.9994C157.294 75.1126 153.144 79.5 148 79.5H9.79999C4.65607 79.5 0.506225 75.1127 0.5 69.9997V53.125C0.5 51.5699 1.61583 50.2769 3.1537 49.9916L3.18927 49.985L3.22351 49.9734C12.4457 46.8365 12.4607 33.1581 3.22303 30.0265L3.18902 30.0149L3.15371 30.0084C1.61583 29.7231 0.5 28.4301 0.5 26.875V10C0.5 4.88996 4.66244 0.506539 9.8003 0.5H148C153.138 0.506539 157.3 4.88996 157.3 10V26.875C157.3 28.4301 156.184 29.7231 154.646 30.0084L154.611 30.0149L154.577 30.0265C145.339 33.1581 145.354 46.8365 154.576 49.9734Z" />
@@ -120,10 +122,10 @@ function MiniFlightCard({
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="absolute left-0 top-0 flex h-20 w-[158px] cursor-pointer flex-col justify-between px-5 py-3"
+        className="absolute left-0 top-0 flex h-20 w-full cursor-pointer flex-col justify-between px-5 py-3"
       >
         <div className="flex items-center gap-1">
-          <span className="font-medium text-gray-800 dark:text-gray-800">
+          <span className="text-[15px] font-medium text-gray-800 dark:text-gray-800">
             {formatDateTime(flight.outbound.departureTime, true)}
           </span>
           {tripType === "return" && (
@@ -143,7 +145,7 @@ function MiniFlightCard({
                   />
                 </svg>
               </span>
-              <span className="text-sm font-medium text-gray-800 dark:text-gray-800">
+              <span className="text-[15px] font-medium text-gray-800 dark:text-gray-800">
                 {formatDateTime(flight.inbound.departureTime, true)}
               </span>
             </>
@@ -193,7 +195,9 @@ function MiniCityCard({
         className="absolute left-0 top-0 transition-all duration-300"
         style={{
           fill: isHovered ? priceColor.backgroundHover : priceColor.background,
-          stroke: isHovered ? priceColor.text : priceColor.borderColor,
+          stroke: isHovered
+            ? priceColor.borderColor
+            : priceColor.backgroundHover,
         }}
       >
         <path d="M3.22351 49.9734C7.43279 48.5416 10.3066 44.4181 10.3 39.9992C10.2933 35.5833 7.44159 31.4566 3.22303 30.0265L3.18902 30.0149L3.15371 30.0084C2.36273 29.8616 1.73122 29.5008 1.23708 28.9245C0.746737 28.3527 0.5 27.678 0.5 26.875V10C0.5 7.38057 1.40928 5.15314 3.238 3.29027C5.06683 1.42729 7.2455 0.503239 9.8003 0.5H190.2C192.754 0.503239 194.933 1.42729 196.762 3.29027C198.591 5.15314 199.5 7.38057 199.5 10V70C199.5 72.6194 198.591 74.8469 196.762 76.7097C194.933 78.5727 192.754 79.4968 190.2 79.5H9.79999C7.24185 79.5 5.06355 78.5775 3.2383 76.715C1.41279 74.8523 0.50318 72.623 0.5 69.9997V53.125C0.5 52.322 0.746738 51.6473 1.23707 51.0755C1.73123 50.4992 2.36273 50.1383 3.1537 49.9916L3.18927 49.985L3.22351 49.9734Z" />

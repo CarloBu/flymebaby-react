@@ -24,7 +24,7 @@ export const ThemeToggle = () => {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="z-50 flex items-center gap-2">
       <button
         onClick={toggleTheme}
         role="switch"
