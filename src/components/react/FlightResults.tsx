@@ -84,7 +84,6 @@ function MiniFlightCard({
     onClick?.();
     onFlightClick?.(flightId);
 
-    // Scroll to the detailed card
     setTimeout(() => {
       const detailedCard = document.getElementById(`flight-${flightId}`);
       if (detailedCard) {
@@ -99,46 +98,73 @@ function MiniFlightCard({
   const priceColor = getPriceColor(flight.totalPrice, minPrice, maxPrice);
 
   return (
-    <div
-      onClick={handleClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="m-2 inline-flex h-[5rem] w-[9.9rem] cursor-pointer flex-col justify-between rounded-2xl border p-3 transition-all"
-      style={{
-        backgroundColor: isHovered
-          ? priceColor.backgroundHover
-          : priceColor.background,
-        borderColor: isHovered ? priceColor.text : priceColor.borderColor,
-      }}
-    >
-      <div className="flex items-center gap-1">
-        <span className="font-medium dark:text-gray-700">
-          {formatDateTime(flight.outbound.departureTime, true)}
-        </span>
-        {tripType === "return" && (
-          <>
-            <span className="text-gray-400 dark:text-gray-400">→</span>
-            <span className="font-medium dark:text-gray-700">
-              {formatDateTime(flight.inbound.departureTime, true)}
-            </span>
-          </>
-        )}
-      </div>
-      <div className="flex items-center justify-between">
-        {tripType === "return" && tripDays && (
-          <span className="text-xs text-gray-500 dark:text-gray-600">
-            {tripDays} day{tripDays !== 1 ? "s" : ""}
+    <div className="relative m-2 inline-block h-20 w-[9.9rem]">
+      {/* SVG Background */}
+      <svg
+        width="158"
+        height="80"
+        viewBox="0 0 158 80"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="absolute left-0 top-0 transition-all duration-300"
+        style={{
+          fill: isHovered ? priceColor.backgroundHover : priceColor.background,
+          stroke: isHovered ? priceColor.text : priceColor.borderColor,
+        }}
+      >
+        <path d="M154.576 49.9734L154.611 49.985L154.646 49.9916C156.184 50.2769 157.3 51.5699 157.3 53.125V69.9994C157.294 75.1126 153.144 79.5 148 79.5H9.79999C4.65607 79.5 0.506225 75.1127 0.5 69.9997V53.125C0.5 51.5699 1.61583 50.2769 3.1537 49.9916L3.18927 49.985L3.22351 49.9734C12.4457 46.8365 12.4607 33.1581 3.22303 30.0265L3.18902 30.0149L3.15371 30.0084C1.61583 29.7231 0.5 28.4301 0.5 26.875V10C0.5 4.88996 4.66244 0.506539 9.8003 0.5H148C153.138 0.506539 157.3 4.88996 157.3 10V26.875C157.3 28.4301 156.184 29.7231 154.646 30.0084L154.611 30.0149L154.577 30.0265C145.339 33.1581 145.354 46.8365 154.576 49.9734Z" />
+      </svg>
+
+      {/* Content */}
+      <div
+        onClick={handleClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="absolute left-0 top-0 flex h-20 w-[158px] cursor-pointer flex-col justify-between px-5 py-3"
+      >
+        <div className="flex items-center gap-1">
+          <span className="font-medium text-gray-800 dark:text-gray-800">
+            {formatDateTime(flight.outbound.departureTime, true)}
           </span>
-        )}
-        <span className="font-bold" style={{ color: priceColor.text }}>
-          €{Math.round(flight.totalPrice)}
-        </span>
+          {tripType === "return" && (
+            <>
+              <span className="px-[2px] text-gray-600 dark:text-gray-800">
+                <svg
+                  width="8"
+                  height="8"
+                  viewBox="0 0 8 8"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="translate-y-[1px] -rotate-90"
+                >
+                  <path
+                    d="M4.35355 7.35355C4.15829 7.54882 3.84171 7.54882 3.64645 7.35355L0.464466 4.17157C0.269204 3.97631 0.269204 3.65973 0.464466 3.46447C0.659728 3.2692 0.976311 3.2692 1.17157 3.46447L4 6.29289L6.82843 3.46447C7.02369 3.2692 7.34027 3.2692 7.53553 3.46447C7.7308 3.65973 7.7308 3.97631 7.53553 4.17157L4.35355 7.35355ZM4.5 0L4.5 7H3.5L3.5 0L4.5 0Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+              <span className="text-sm font-medium text-gray-800 dark:text-gray-800">
+                {formatDateTime(flight.inbound.departureTime, true)}
+              </span>
+            </>
+          )}
+        </div>
+        <div className="flex items-center justify-between">
+          {tripType === "return" && tripDays && (
+            <span className="text-xs text-gray-600 dark:text-gray-700">
+              {tripDays} day{tripDays !== 1 ? "s" : ""}
+            </span>
+          )}
+          <span className="font-bold" style={{ color: priceColor.text }}>
+            €{Math.round(flight.totalPrice)}
+          </span>
+        </div>
       </div>
     </div>
   );
 }
 
-// Add new MiniCityCard component after the existing MiniFlightCard component
+// Update the MiniCityCard component
 function MiniCityCard({
   city,
   cityData,
@@ -156,29 +182,45 @@ function MiniCityCard({
   const priceColor = getPriceColor(cityData.minPrice, minPrice, maxPrice);
 
   return (
-    <div
-      onClick={onCardClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="m-2 inline-flex h-[5rem] w-[12.5rem] cursor-pointer flex-col justify-between rounded-2xl border p-3 transition-all"
-      style={{
-        backgroundColor: isHovered
-          ? priceColor.backgroundHover
-          : priceColor.background,
-        borderColor: isHovered ? priceColor.text : priceColor.borderColor,
-      }}
-    >
-      <div className="truncate font-medium text-gray-800" title={city}>
-        {city}
-      </div>
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-xs text-gray-500">
-          {cityData.flights.length} flight
-          {cityData.flights.length !== 1 ? "s" : ""}
-        </span>
-        <span className="font-bold" style={{ color: priceColor.text }}>
-          €{Math.round(cityData.minPrice)}
-        </span>
+    <div className="relative m-2 inline-block h-20 w-[200px]">
+      {/* SVG Background - Updated path with only left cutout */}
+      <svg
+        width="200"
+        height="80"
+        viewBox="0 0 200 80"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="absolute left-0 top-0 transition-all duration-300"
+        style={{
+          fill: isHovered ? priceColor.backgroundHover : priceColor.background,
+          stroke: isHovered ? priceColor.text : priceColor.borderColor,
+        }}
+      >
+        <path d="M3.22351 49.9734C7.43279 48.5416 10.3066 44.4181 10.3 39.9992C10.2933 35.5833 7.44159 31.4566 3.22303 30.0265L3.18902 30.0149L3.15371 30.0084C2.36273 29.8616 1.73122 29.5008 1.23708 28.9245C0.746737 28.3527 0.5 27.678 0.5 26.875V10C0.5 7.38057 1.40928 5.15314 3.238 3.29027C5.06683 1.42729 7.2455 0.503239 9.8003 0.5H190.2C192.754 0.503239 194.933 1.42729 196.762 3.29027C198.591 5.15314 199.5 7.38057 199.5 10V70C199.5 72.6194 198.591 74.8469 196.762 76.7097C194.933 78.5727 192.754 79.4968 190.2 79.5H9.79999C7.24185 79.5 5.06355 78.5775 3.2383 76.715C1.41279 74.8523 0.50318 72.623 0.5 69.9997V53.125C0.5 52.322 0.746738 51.6473 1.23707 51.0755C1.73123 50.4992 2.36273 50.1383 3.1537 49.9916L3.18927 49.985L3.22351 49.9734Z" />
+      </svg>
+
+      {/* Content */}
+      <div
+        onClick={onCardClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="absolute left-0 top-0 flex h-20 w-[200px] cursor-pointer flex-col justify-between px-6 py-3"
+      >
+        <div
+          className="truncate font-medium text-gray-800 dark:text-gray-800"
+          title={city}
+        >
+          {city}
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs text-gray-600 dark:text-gray-700">
+            {cityData.flights.length} flight
+            {cityData.flights.length !== 1 ? "s" : ""}
+          </span>
+          <span className="font-bold" style={{ color: priceColor.text }}>
+            €{Math.round(cityData.minPrice)}
+          </span>
+        </div>
       </div>
     </div>
   );
