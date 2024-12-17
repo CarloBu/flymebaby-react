@@ -41,7 +41,7 @@ export function LoadingIndicator() {
       <div className="mb-6 flex items-center justify-center">
         <div className="relative h-16 w-16">
           <div className="absolute inset-0 animate-[spin_2s_linear_infinite] rounded-full border-[3px] border-gray-200 dark:border-gray-700" />
-          <div className="absolute inset-0 animate-[spin_1.5s_linear_infinite] rounded-full border-[3px] border-transparent border-t-violet-500 dark:border-t-violet-400" />
+          <div className="absolute inset-0 animate-[spin_1.5s_linear_infinite] rounded-full border-[3px] border-transparent border-t-orange-500 dark:border-t-orange-400" />
         </div>
       </div>
       <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -308,7 +308,7 @@ function DetailedFlightCard({
       }`}
     >
       {/* Dashed border connecting cutouts */}
-      <div className="absolute top-1/2 -z-10 h-[1px] w-full border-b border-dashed border-violet-300 dark:border-gray-400"></div>
+      <div className="absolute top-1/2 -z-10 h-[1px] w-full border-b border-dashed border-orange-300 dark:border-gray-400"></div>
 
       <div className="relative flex flex-col overflow-hidden rounded-3xl border border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50 dark:border-gray-400 dark:bg-gray-800 dark:hover:border-gray-100 dark:hover:bg-gray-600 md:grid md:grid-cols-[2fr,1px,1fr]">
         {/* Left section - Flight details */}
