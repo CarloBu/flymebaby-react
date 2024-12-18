@@ -171,7 +171,7 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
     isMobileDevice() ? 800 : 500, // Adjusted spawn rate from 1000 to 800 for mobile
   );
 
-  // Add mouse control with improved interaction
+  // Update the mouse constraint creation with better touch handling
   const mouse = Mouse.create(render.canvas);
   const mouseConstraint = MouseConstraint.create(engine, {
     mouse: mouse,
@@ -179,17 +179,61 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
       stiffness: 0.2,
       render: { visible: false },
     },
-    // Better touch handling
-    collisionFilter: {
-      mask: 0x0001,
-    },
   });
+
+  // Improve touch handling with better precision
+  const updateMousePosition = (event: TouchEvent) => {
+    const touch = event.touches[0];
+    const rect = mouse.element.getBoundingClientRect();
+    const scale = render.options.pixelRatio || 1;
+
+    mouse.position.x = (touch.clientX - rect.left) / scale;
+    mouse.position.y = (touch.clientY - rect.top) / scale;
+  };
+
+  mouse.element.addEventListener(
+    "touchmove",
+    (event) => {
+      updateMousePosition(event);
+      event.preventDefault();
+    },
+    { passive: false },
+  );
+
+  mouse.element.addEventListener(
+    "touchstart",
+    (event) => {
+      updateMousePosition(event);
+      // Trigger the constraint
+      mouseConstraint.mouse.button = 0;
+      event.preventDefault();
+    },
+    { passive: false },
+  );
+
+  mouse.element.addEventListener(
+    "touchend",
+    (event) => {
+      // Release the constraint
+      mouseConstraint.mouse.button = -1;
+      event.preventDefault();
+    },
+    { passive: false },
+  );
 
   // Ensure mouse events work properly
   render.mouse = mouse;
 
   // Add mouse constraint to world
   Composite.add(world, mouseConstraint);
+
+  // Optimize for mobile performance
+  if (isMobileDevice()) {
+    engine.timing.timeScale = 0.8; // Slow down physics slightly for better mobile performance
+    render.options.wireframes = false;
+    render.options.showSleeping = false;
+    render.options.showDebug = false;
+  }
 
   // Add touch event optimization
   if ("ontouchstart" in window) {
