@@ -149,7 +149,7 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
 
   // Modify initial pills count based on screen size
   const getInitialPillCount = () => {
-    return isMobileDevice() ? 30 : 50; // Increased from 25 to 30 for mobile
+    return isMobileDevice() ? 20 : 50; // Increased from 25 to 30 for mobile
   };
 
   // Initial pills with dynamic count
@@ -162,7 +162,7 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
   // Modify spawn interval logic
   const spawnInterval = setInterval(
     () => {
-      const maxPills = isMobileDevice() ? 80 : 140; // Increased from 70 to 80 for mobile
+      const maxPills = isMobileDevice() ? 30 : 140; // Increased from 70 to 80 for mobile
 
       if (engine.world.bodies.length < maxPills) {
         Composite.add(world, spawnPill());
