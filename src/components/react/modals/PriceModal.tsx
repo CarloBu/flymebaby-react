@@ -84,7 +84,7 @@ export const PriceModal = ({
       <div className="relative inline-flex">
         <PopoverTrigger>
           <div
-            className="button-animation relative flex min-w-[8rem] cursor-pointer select-none items-center justify-center rounded-full bg-orange-custom px-6 py-3 text-base text-white shadow-orange-shadow hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-hover-custom dark:hover:shadow-orange-hover-shadow"
+            className="button-animation relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-orange-custom px-4 py-2 text-base text-white shadow-orange-shadow hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-hover-custom dark:hover:shadow-orange-hover-shadow sm:min-w-[8rem] sm:px-6 sm:py-3"
             aria-label="Set a maximum budget"
           >
             <span className="block overflow-hidden">

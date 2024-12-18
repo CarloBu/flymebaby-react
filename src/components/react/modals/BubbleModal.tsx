@@ -82,7 +82,7 @@ export const BubbleModal = ({
                 <button
                   type="button"
                   className={cn(
-                    "button-animation relative left-2 rounded-full bg-gray-900 p-3 text-white hover:opacity-80 dark:bg-gray-100 dark:text-gray-900",
+                    "button-animation relative left-1 rounded-full bg-gray-900 p-[0.65rem] text-white hover:opacity-80 dark:bg-gray-100 dark:text-gray-900 sm:left-2 sm:p-3",
                   )}
                   aria-label={buttonAriaLabel}
                   role="button"

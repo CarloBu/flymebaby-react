@@ -484,9 +484,9 @@ export default function FlightSearch() {
         <input type="hidden" name="adults" value={adults} />
         <input type="hidden" name="children" value={children} />
 
-        <div className="items-left flex flex-col gap-6 text-lg leading-relaxed md:items-center">
+        <div className="items-left flex flex-col gap-4 text-base leading-relaxed sm:items-center sm:gap-6 sm:text-lg">
           <div
-            className="flex scale-90 flex-wrap items-center gap-2 md:scale-100"
+            className="flex flex-wrap items-center gap-2"
             role="group"
             aria-label="trip-type-group"
           >
@@ -507,7 +507,7 @@ export default function FlightSearch() {
 
           <motion.div
             layout="position"
-            className="layout-animation flex scale-90 flex-wrap items-center gap-2 md:scale-100"
+            className="layout-animation flex flex-wrap items-center justify-end gap-2"
             role="group"
           >
             for
@@ -524,8 +524,10 @@ export default function FlightSearch() {
                 key={passenger.type}
                 className="flex items-center gap-2"
               >
-                {index === 0 && <span className="text-lg">and</span>}
-                {index > 0 && <span className="text-lg">and</span>}
+                {index === 0 && (
+                  <span className="text-base sm:text-lg">and</span>
+                )}
+                {index > 0 && <span className="text-base sm:text-lg">and</span>}
                 <NumberModal
                   value={passenger.count}
                   onChange={(count) =>
@@ -553,42 +555,48 @@ export default function FlightSearch() {
 
           <PopMotion
             key="locations-section"
-            className="flex flex-wrap items-center gap-2"
+            className="flex flex-wrap items-center gap-4 sm:gap-2"
           >
-            <span id="origin-label">from</span>
-            <span className="inline-block transition-all">
-              <MultiCombobox
-                options={airports}
-                selectedValues={selectedOrigins}
-                onChange={setSelectedOrigins}
-                placeholder="Select airports..."
-                searchPlaceholder="Search airports..."
-                showCode={true}
-                className="min-w-[11.5rem]"
-                ariaLabel="Open departure airports selection"
-              />
-            </span>
-            <span id="destination-label">to</span>
-            <span className="inline-block transition-all">
-              <MultiCombobox
-                options={countries.map((country) => ({
-                  code: country,
-                  name: country,
-                }))}
-                selectedValues={selectedCountries}
-                onChange={setSelectedCountries}
-                placeholder="Select countries..."
-                searchPlaceholder="Search countries..."
-                showAllOption={true}
-                allOptionText="All Countries"
-                className="min-w-[12rem]"
-                ariaLabel="Open destination countries selection"
-              />
-            </span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <span id="origin-label">from</span>
+              <span className="inline-block transition-all">
+                <MultiCombobox
+                  options={airports}
+                  selectedValues={selectedOrigins}
+                  onChange={setSelectedOrigins}
+                  placeholder="Select airports..."
+                  searchPlaceholder="Search airports..."
+                  showCode={true}
+                  className="min-w-[11.5rem]"
+                  ariaLabel="Open departure airports selection"
+                />
+              </span>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <span id="destination-label">to</span>
+              <span className="inline-block transition-all">
+                <MultiCombobox
+                  options={countries.map((country) => ({
+                    code: country,
+                    name: country,
+                  }))}
+                  selectedValues={selectedCountries}
+                  onChange={setSelectedCountries}
+                  placeholder="Select countries..."
+                  searchPlaceholder="Search countries..."
+                  showAllOption={true}
+                  allOptionText="All Countries"
+                  className="min-w-[12rem]"
+                  ariaLabel="Open destination countries selection"
+                />
+              </span>
+            </div>
           </PopMotion>
 
-          <div className="flex flex-wrap items-center gap-2" role="group">
-            <span id="date-range-label">sometime between</span>
+          <div
+            className="flex flex-wrap items-center justify-end gap-2"
+            role="group"
+          >
             <DatePickerWithRange
               dateRange={dateRange}
               onDateRangeChange={setDateRange}
@@ -632,7 +640,7 @@ export default function FlightSearch() {
             </PopMotion>
           )}
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <span id="price-label">with a maximum budget of</span>
             <PriceModal
               value={maxPrice}

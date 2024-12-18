@@ -53,14 +53,17 @@ export function DatePickerWithRange({
 
   return (
     <div className={cn("relative inline-flex gap-2", className)} ref={modalRef}>
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
         {/* Start Date Picker - Mobile */}
-        <div className="w-full md:hidden">
+        <div className="flex w-full items-center justify-end gap-2 sm:hidden">
+          <span id="date-range-label" className="whitespace-nowrap">
+            sometime between
+          </span>
           <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="w-full orange-button button-animation"
+                className="orange-button button-animation w-full"
               >
                 {formatStartDate()}
               </button>
@@ -115,12 +118,13 @@ export function DatePickerWithRange({
         </div>
 
         {/* End Date Picker - Mobile */}
-        <div className="w-full md:hidden">
+        <div className="flex w-full items-center justify-end gap-2 sm:hidden">
+          <span className="whitespace-nowrap">to</span>
           <Popover open={isEndDateOpen} onOpenChange={setIsEndDateOpen}>
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="w-full orange-button button-animation-subtle"
+                className="orange-button button-animation-subtle w-full max-w-52"
               >
                 {formatEndDate()}
               </button>
@@ -176,25 +180,30 @@ export function DatePickerWithRange({
         </div>
 
         {/* Desktop Range Picker */}
-        <div className="hidden md:block">
+        <div className="hidden sm:block">
           <Popover>
             <div className="flex items-center">
-              <div className="w-52">
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="w-52 orange-button button-animation"
-                  >
-                    {formatStartDate()}
-                  </button>
-                </PopoverTrigger>
+              <div className="flex items-center gap-2">
+                <span id="date-range-label" className="whitespace-nowrap">
+                  sometime between
+                </span>
+                <div className="w-52">
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="orange-button button-animation w-52"
+                    >
+                      {formatStartDate()}
+                    </button>
+                  </PopoverTrigger>
+                </div>
               </div>
               <span className="px-4 text-gray-900 dark:text-white">to</span>
               <div className="w-52">
                 <PopoverTrigger asChild>
                   <button
                     type="button"
-                    className="w-52 orange-button button-animation-subtle"
+                    className="orange-button button-animation-subtle w-52"
                   >
                     {formatEndDate()}
                   </button>

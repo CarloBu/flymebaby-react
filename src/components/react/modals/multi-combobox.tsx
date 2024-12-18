@@ -120,7 +120,7 @@ export function MultiCombobox({
         {visibleValues.map((option) => (
           <div
             key={option.code}
-            className="flex items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-base transition-all dark:bg-black/20"
+            className="flex items-center gap-1 rounded-full bg-white/20 py-0 pl-2 pr-2 text-base transition-all dark:bg-black/20 sm:py-1 sm:pl-3 sm:pr-2"
           >
             <span>{option.code}</span>
             <div
@@ -139,15 +139,17 @@ export function MultiCombobox({
                 }
               }}
               aria-label="Remove"
-              className="-mr-1 rounded-full p-[2px] transition-all hover:bg-gray-800 hover:text-white dark:hover:bg-gray-700 dark:hover:text-white"
+              className="rounded-full p-[2px] transition-all hover:bg-gray-800 hover:text-white dark:hover:bg-gray-700 dark:hover:text-white"
             >
               <CloseIcon className="scale-75" />
             </div>
           </div>
         ))}
         {remainingCount > 0 && (
-          <div className="flex items-center gap-1 rounded-full bg-white/20 px-4 py-0.5 text-base transition-all dark:bg-black/20">
-            +{remainingCount} more
+          <div className="flex items-center gap-1 rounded-full bg-white/20 px-3 py-0.5 text-base transition-all dark:bg-black/20">
+            {remainingCount > 0 && window.innerWidth > 360
+              ? `+${remainingCount} more`
+              : `+${remainingCount}`}
           </div>
         )}
       </>
@@ -162,7 +164,7 @@ export function MultiCombobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "button-animation-subtle flex w-full min-w-40 select-none items-center justify-start gap-2 whitespace-nowrap rounded-full bg-orange-custom px-3 py-6 text-base text-white shadow-orange-shadow transition-all hover:bg-orange-custom hover:text-white hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-custom dark:hover:text-white dark:hover:shadow-orange-hover-shadow",
+            "button-animation-subtle flex w-full min-w-40 select-none items-center justify-start gap-2 whitespace-nowrap rounded-full bg-orange-custom px-2 py-5 text-base text-white shadow-orange-shadow transition-all hover:bg-orange-custom hover:text-white hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-custom dark:hover:text-white dark:hover:shadow-orange-hover-shadow sm:px-2 sm:py-6",
             className,
           )}
           aria-label={ariaLabel}

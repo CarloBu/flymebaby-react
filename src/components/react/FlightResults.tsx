@@ -98,7 +98,7 @@ function MiniFlightCard({
   const priceColor = getPriceColor(flight.totalPrice, minPrice, maxPrice);
 
   return (
-    <div className="relative inline-block h-20 w-[9.8rem]">
+    <div className="relative inline-block h-20 w-[9.3rem] sm:w-[9.9rem]">
       {/* SVG Background */}
       <svg
         width="158"
@@ -106,7 +106,7 @@ function MiniFlightCard({
         viewBox="0 0 158 80"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="absolute left-0 top-0 scale-95 transition-all duration-300 sm:scale-100"
+        className="absolute left-0 top-0 -ml-1 scale-95 transition-all duration-300 sm:ml-0 sm:scale-100"
         style={{
           fill: isHovered ? priceColor.backgroundHover : priceColor.background,
           stroke: isHovered
@@ -552,7 +552,7 @@ function CityGroup({
 
       {/* Mini Cards - Show when collapsed */}
       {!isExpanded && (
-        <div className="mini-cards mt-5 flex flex-wrap gap-x-0 gap-y-1 sm:mt-8 sm:gap-x-5 sm:gap-y-4">
+        <div className="mini-cards xxsm:gap-x-4 mt-5 flex flex-wrap gap-x-3 gap-y-2 sm:mt-8 sm:gap-x-5 sm:gap-y-4">
           {cityData.flights
             .sort((a, b) => a.totalPrice - b.totalPrice)
             .map((flight, index) => (

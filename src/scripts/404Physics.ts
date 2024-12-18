@@ -54,10 +54,10 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
     ctx.roundRect(0, 0, width, height, height / 2);
     ctx.fill();
 
-    // Increase font size for mobile
+    // Set fixed font size based on height only, ignoring width
     const fontSize = isMobileDevice()
-      ? Math.min(height * 0.7, width * 0.3) // Larger font for mobile
-      : Math.min(height * 0.6, width * 0.15);
+      ? height * 0.4 // Fixed size for mobile
+      : height * 0.4; // Fixed size for desktop
 
     // Draw text
     ctx.fillStyle = "white";
@@ -171,7 +171,7 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
     isMobileDevice() ? 800 : 500, // Adjusted spawn rate from 1000 to 800 for mobile
   );
 
-  // Update the mouse constraint creation with better touch handling
+  // Create mouse constraint with basic settings
   const mouse = Mouse.create(render.canvas);
   const mouseConstraint = MouseConstraint.create(engine, {
     mouse: mouse,
@@ -181,20 +181,14 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
     },
   });
 
-  // Improve touch handling with better precision
-  const updateMousePosition = (event: TouchEvent) => {
-    const touch = event.touches[0];
-    const rect = mouse.element.getBoundingClientRect();
-    const scale = render.options.pixelRatio || 1;
-
-    mouse.position.x = (touch.clientX - rect.left) / scale;
-    mouse.position.y = (touch.clientY - rect.top) / scale;
-  };
-
+  // Basic touch handling
   mouse.element.addEventListener(
     "touchmove",
     (event) => {
-      updateMousePosition(event);
+      const touch = event.touches[0];
+      const rect = mouse.element.getBoundingClientRect();
+      mouse.position.x = touch.clientX - rect.left;
+      mouse.position.y = touch.clientY - rect.top;
       event.preventDefault();
     },
     { passive: false },
@@ -203,8 +197,10 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
   mouse.element.addEventListener(
     "touchstart",
     (event) => {
-      updateMousePosition(event);
-      // Trigger the constraint
+      const touch = event.touches[0];
+      const rect = mouse.element.getBoundingClientRect();
+      mouse.position.x = touch.clientX - rect.left;
+      mouse.position.y = touch.clientY - rect.top;
       mouseConstraint.mouse.button = 0;
       event.preventDefault();
     },
@@ -214,7 +210,6 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
   mouse.element.addEventListener(
     "touchend",
     (event) => {
-      // Release the constraint
       mouseConstraint.mouse.button = -1;
       event.preventDefault();
     },
@@ -227,17 +222,9 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
   // Add mouse constraint to world
   Composite.add(world, mouseConstraint);
 
-  // Optimize for mobile performance
+  // Simple mobile optimization
   if (isMobileDevice()) {
-    engine.timing.timeScale = 0.8; // Slow down physics slightly for better mobile performance
-    render.options.wireframes = false;
-    render.options.showSleeping = false;
-    render.options.showDebug = false;
-  }
-
-  // Add touch event optimization
-  if ("ontouchstart" in window) {
-    render.options.pixelRatio = 1; // Lower pixel ratio for better mobile performance
+    render.options.pixelRatio = 1;
   }
 
   // Run the engine

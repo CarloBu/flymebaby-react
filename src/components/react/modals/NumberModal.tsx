@@ -95,7 +95,7 @@ export const NumberModal = ({
       <div className="group relative inline-flex">
         <PopoverTrigger asChild>
           <div
-            className="button-animation relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-orange-custom px-6 py-3 text-base text-white shadow-orange-shadow transition-all hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-hover-custom dark:hover:shadow-orange-hover-shadow"
+            className="button-animation relative flex min-w-[6rem] cursor-pointer select-none items-center justify-center rounded-full bg-orange-custom px-5 py-2 text-base text-white shadow-orange-shadow transition-all hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-hover-custom dark:hover:shadow-orange-hover-shadow sm:min-w-[7rem] sm:px-6 sm:py-3"
             role="button"
             tabIndex={0}
             aria-label={ariaLabel}

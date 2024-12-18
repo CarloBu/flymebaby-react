@@ -15,7 +15,7 @@
 	[&::-webkit-scrollbar]:w-1;
 }
 .orange-button {
-  @apply whitespace-nowrap rounded-full bg-orange-custom px-6 py-3 text-center text-base text-white shadow-orange-shadow hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow [font-smooth:always]
+  @apply whitespace-nowrap rounded-full bg-orange-custom px-4 py-2 sm:px-6 sm:py-3 text-center text-base text-white shadow-orange-shadow hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow [font-smooth:always]
 }
 
 .button-animation{
