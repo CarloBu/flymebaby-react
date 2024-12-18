@@ -647,7 +647,7 @@ export default function FlightSearch() {
         <div className="text-center">
           <button
             type="submit"
-            className="button-animation inline-flex select-none items-center justify-center rounded-full bg-black px-9 py-5 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            className="button-animation mb-10 inline-flex select-none items-center justify-center rounded-full bg-black px-9 py-5 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-gray-200"
             disabled={loading}
             aria-busy={loading}
             role="button"

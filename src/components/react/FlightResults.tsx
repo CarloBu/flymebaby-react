@@ -869,7 +869,7 @@ export function FlightResults({
             <div
               key={country}
               id={`country-group-${country.toLowerCase().replace(/\s+/g, "-")}`}
-              className={`w-full rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 max-[450px]:p-2 sm:p-6 ${
+              className={`my-4 w-full rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 max-[450px]:p-2 sm:p-6 ${
                 scrollState.highlightedCountry === country
                   ? "border-gray-300 dark:border-gray-400"
                   : "border-gray-200 hover:border-gray-300 dark:border-gray-400 dark:hover:border-gray-400"
