@@ -125,7 +125,7 @@ function MiniFlightCard({
         className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col justify-between px-5 py-3"
       >
         <div className="flex items-center justify-between">
-          <span className="text-[0.938rem] font-medium text-gray-800 dark:text-gray-800">
+          <span className="whitespace-nowrap text-[0.938rem] font-medium text-gray-800 dark:text-gray-800">
             {formatDateTime(flight.outbound.departureTime, true)}
           </span>
           {tripType === "return" && (
@@ -145,7 +145,7 @@ function MiniFlightCard({
                   />
                 </svg>
               </span>
-              <span className="text-[0.938rem] font-medium text-gray-800 dark:text-gray-800">
+              <span className="whitespace-nowrap text-[0.938rem] font-medium text-gray-800 dark:text-gray-800">
                 {formatDateTime(flight.inbound.departureTime, true)}
               </span>
             </>
@@ -531,7 +531,7 @@ function CityGroup({
         className="mb-3 cursor-pointer px-2 text-xl font-semibold text-gray-700 transition-colors hover:text-black dark:text-gray-200 dark:hover:text-gray-400 sm:px-0"
         onClick={handleToggle}
       >
-        <div className="flex select-none items-center justify-between gap-2">
+        <div className="mr-1 mt-4 flex select-none items-center justify-between gap-2 sm:mt-1">
           <div className="flex items-baseline gap-2">
             {city}
             <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -552,7 +552,7 @@ function CityGroup({
 
       {/* Mini Cards - Show when collapsed */}
       {!isExpanded && (
-        <div className="mini-cards xxsm:gap-x-4 mt-5 flex flex-wrap gap-x-3 gap-y-2 sm:mt-8 sm:gap-x-5 sm:gap-y-4">
+        <div className="mini-cards xxsm:gap-x-4 mt-2 flex flex-wrap gap-x-3 gap-y-2 sm:mt-2 sm:gap-x-5 sm:gap-y-4">
           {cityData.flights
             .sort((a, b) => a.totalPrice - b.totalPrice)
             .map((flight, index) => (
@@ -875,12 +875,12 @@ export function FlightResults({
                   : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
               }`}
             >
-              <div className="">
+              <div className="mx-2">
                 <div
-                  className="mb-4 ml-2 cursor-pointer text-3xl font-bold text-gray-800 transition-colors hover:text-black dark:text-gray-100 dark:hover:text-gray-400"
+                  className="mb-4 ml-2 mt-2 cursor-pointer text-3xl font-bold text-gray-800 transition-colors hover:text-black dark:text-gray-100 dark:hover:text-gray-400 sm:mt-0"
                   onClick={() => toggleCountry(country)}
                 >
-                  <div className="flex select-none items-center justify-between gap-2">
+                  <div className="mr-1 flex select-none items-center justify-between gap-2 sm:-mr-1">
                     <div className="flex items-center gap-2">
                       {country}
                       <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
