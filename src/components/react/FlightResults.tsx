@@ -311,7 +311,7 @@ function DetailedFlightCard({
       }`}
     >
       <div className="relative flex flex-col overflow-hidden md:grid md:grid-cols-[3fr,0px,14rem]">
-        <div className="space-y-4 rounded-3xl rounded-b-xl border border-slate-100 bg-slate-50 p-4 transition-all duration-300 group-hover:border-slate-200 group-hover:bg-slate-100 dark:bg-slate-800 group-hover:dark:bg-slate-700 md:rounded-3xl md:rounded-r-xl md:p-6">
+        <div className="space-y-4 rounded-3xl rounded-b-xl border border-slate-200 bg-slate-50 p-4 transition-all duration-300 group-hover:border-slate-200 group-hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 group-hover:dark:border-slate-500 group-hover:dark:bg-slate-700 md:rounded-3xl md:rounded-r-xl md:p-6">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-200">
@@ -524,7 +524,7 @@ function CityGroup({
       className={`mb-2 rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 max-[450px]:p-2 md:mb-4 md:p-6 ${
         isHighlighted
           ? "border-gray-400 dark:border-gray-400"
-          : "border-gray-200 hover:border-gray-400 dark:border-gray-400 dark:hover:border-gray-400"
+          : "border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500"
       }`}
     >
       <div
@@ -872,7 +872,7 @@ export function FlightResults({
               className={`my-4 w-full rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 max-[450px]:p-2 sm:p-6 ${
                 scrollState.highlightedCountry === country
                   ? "border-gray-300 dark:border-gray-400"
-                  : "border-gray-200 hover:border-gray-300 dark:border-gray-400 dark:hover:border-gray-400"
+                  : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
               }`}
             >
               <div className="">
