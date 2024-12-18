@@ -1,5 +1,6 @@
-# www.robotstxt.org/
-# Allow crawling of all content
-
+# Allow all crawlers
 User-agent: *
 Allow: /
+
+# Sitemap location
+Sitemap: https://flymebaby.oaksun.studio/sitemap.xml
