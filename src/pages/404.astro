@@ -41,6 +41,16 @@ import Layout from '../layouts/Layout.astro';
 	const canvas = document.getElementById('physics-canvas') as HTMLCanvasElement;
 	if (canvas) {
 		const cleanup = initPhysics(canvas);
-		window.addEventListener('unload', cleanup);
+		window.addEventListener('beforeunload', cleanup);
 	}
 </script>
+
+<style is:global>
+	body {
+		overflow: hidden;
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		touch-action: none;
+	}
+</style>

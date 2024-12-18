@@ -1,6 +1,8 @@
 import Matter from "matter-js";
 
 export const initPhysics = (canvas: HTMLCanvasElement) => {
+  const isMobileDevice = () => window.innerWidth < 768;
+
   const Engine = Matter.Engine,
     Render = Matter.Render,
     Runner = Matter.Runner,
@@ -39,7 +41,10 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
       return "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
     }
 
-    const height = 60; // Fixed height for all pills
+    // Adjust height based on screen size
+    const baseHeight = 60;
+    const height = isMobileDevice() ? baseHeight * 2 : baseHeight;
+
     tempCanvas.width = width;
     tempCanvas.height = height;
 
@@ -49,8 +54,10 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
     ctx.roundRect(0, 0, width, height, height / 2);
     ctx.fill();
 
-    // Scale font size based on pill width, but keep it reasonable
-    const fontSize = Math.min(height * 0.6, width * 0.15);
+    // Increase font size for mobile
+    const fontSize = isMobileDevice()
+      ? Math.min(height * 0.7, width * 0.3) // Larger font for mobile
+      : Math.min(height * 0.6, width * 0.15);
 
     // Draw text
     ctx.fillStyle = "white";
@@ -64,15 +71,17 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
 
   // Create pills with random widths and rotation
   const createPill = (x: number, y: number) => {
-    // Random widths between 80-200px, fixed height of 40px
-    const width = Math.random() * 200 + 80;
-    const height = 67;
+    // Adjust pill sizes for mobile - increased minimum and maximum sizes
+    const minWidth = isMobileDevice() ? 200 : 80; // Increased from 60 to 80
+    const maxWidth = isMobileDevice() ? 500 : 200; // Increased from 140 to 160
+    const width = Math.random() * (maxWidth - minWidth) + minWidth;
+    const height = isMobileDevice() ? 120 : 67; // Increased from 47 to 55
 
     const sprite = createPillSprite(width);
 
     const pill = Bodies.rectangle(x, y, width, height, {
       chamfer: { radius: height / 2 },
-      angle: Math.random() * Math.PI * 2, // Random rotation
+      angle: Math.random() * Math.PI * 2,
       render: {
         sprite: {
           texture: sprite,
@@ -80,9 +89,10 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
           yScale: 1,
         },
       },
-      restitution: 0.7, // Make pills bouncy
-      friction: 0.01, // Very low friction
-      density: 0.01, // Make pills lighter
+      restitution: 0.7,
+      friction: 0.01,
+      // Slightly increased density for better physics on mobile
+      density: isMobileDevice() ? 0.015 : 0.01,
     });
     return pill;
   };
@@ -137,20 +147,29 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
     return createPill(x, y);
   };
 
-  // Initial pills
-  const initialPills = Array(50)
+  // Modify initial pills count based on screen size
+  const getInitialPillCount = () => {
+    return isMobileDevice() ? 30 : 50; // Increased from 25 to 30 for mobile
+  };
+
+  // Initial pills with dynamic count
+  const initialPills = Array(getInitialPillCount())
     .fill(null)
     .map(() => spawnPill());
 
   Composite.add(world, initialPills);
 
-  // Continuously spawn new pills
-  const spawnInterval = setInterval(() => {
-    if (engine.world.bodies.length < 140) {
-      // Limit total pills
-      Composite.add(world, spawnPill());
-    }
-  }, 500); // Spawn rate in milliseconds
+  // Modify spawn interval logic
+  const spawnInterval = setInterval(
+    () => {
+      const maxPills = isMobileDevice() ? 80 : 140; // Increased from 70 to 80 for mobile
+
+      if (engine.world.bodies.length < maxPills) {
+        Composite.add(world, spawnPill());
+      }
+    },
+    isMobileDevice() ? 800 : 500, // Adjusted spawn rate from 1000 to 800 for mobile
+  );
 
   // Add mouse control with improved interaction
   const mouse = Mouse.create(render.canvas);
@@ -160,6 +179,10 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
       stiffness: 0.2,
       render: { visible: false },
     },
+    // Better touch handling
+    collisionFilter: {
+      mask: 0x0001,
+    },
   });
 
   // Ensure mouse events work properly
@@ -167,6 +190,11 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
 
   // Add mouse constraint to world
   Composite.add(world, mouseConstraint);
+
+  // Add touch event optimization
+  if ("ontouchstart" in window) {
+    render.options.pixelRatio = 1; // Lower pixel ratio for better mobile performance
+  }
 
   // Run the engine
   Runner.run(Runner.create(), engine);
