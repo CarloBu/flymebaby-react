@@ -17,5 +17,8 @@ export default defineConfig({
     sitemap(),
   ],
   output: "static",
-  site: "https://flymebaby.oaksun.studio",
+  site: "https://gimme.flights",
+  devToolbar: {
+    enabled: false,
+  },
 });

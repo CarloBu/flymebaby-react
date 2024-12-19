@@ -8,13 +8,13 @@ interface Props {
 
 const {
 	title,
-	description = 'Find the best Ryanair flight deals. Compare prices and book cheap flights directly through our flight search engine.',
+	description = 'Find the best Ryanair flight deals. Compare prices and book cheap flights through our flight search engine.',
 } = Astro.props;
 
 // Generate canonical URL
 const canonicalURL = new URL(
 	Astro.url.pathname,
-	Astro.site || 'https://flymebaby.oaksun.studio'
+	Astro.site || 'https://gimme.flights'
 ).href;
 ---
 
@@ -28,10 +28,10 @@ const canonicalURL = new URL(
 		/>
 
 		<!-- Primary Meta Tags -->
-		<title>{title} | Best Ryanair Flight Deals</title>
+		<title>{title} | gimme.flights</title>
 		<meta
 			name='title'
-			content={`${title} | Best Ryanair Flight Deals`}
+			content={`${title} | gimme.flights`}
 		/>
 		<meta
 			name='description'
@@ -49,7 +49,7 @@ const canonicalURL = new URL(
 		/>
 		<meta
 			property='og:title'
-			content={`${title} | Best Ryanair Flight Deals`}
+			content={`${title} | gimme.flights`}
 		/>
 		<meta
 			property='og:description'
@@ -71,7 +71,7 @@ const canonicalURL = new URL(
 		/>
 		<meta
 			property='twitter:title'
-			content={`${title} | Best Ryanair Flight Deals`}
+			content={`${title} | gimme.flights`}
 		/>
 		<meta
 			property='twitter:description'
@@ -138,9 +138,9 @@ const canonicalURL = new URL(
 			{
 				"@context": "https://schema.org",
 				"@type": "WebApplication",
-				"name": "Flight Search - Best Ryanair Deals",
+				"name": "gimme.flights - Best Ryanair Deals",
 				"description": "Find the best Ryanair flight deals. Compare prices and book cheap flights directly through our flight search engine.",
-				"url": "https://flymebaby.oaksun.studio",
+				"url": "https://gimme.flights",
 				"applicationCategory": "TravelApplication",
 				"operatingSystem": "Any",
 				"offers": {
