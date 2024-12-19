@@ -473,7 +473,7 @@ export default function FlightSearch() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl rounded-lg bg-white p-3 dark:bg-gray-900 sm:p-6">
+    <div className="mx-auto max-w-5xl rounded-lg bg-white p-4 dark:bg-gray-900 sm:p-6">
       <form
         onSubmit={handleSubmit}
         className="space-y-8"
@@ -640,7 +640,7 @@ export default function FlightSearch() {
             </PopMotion>
           )}
 
-          <div className="flex flex-wrap items-center justify-end gap-2">
+          <div className="-mb-6 flex flex-wrap items-center justify-end gap-2">
             <span id="price-label">with a maximum budget of</span>
             <PriceModal
               value={maxPrice}

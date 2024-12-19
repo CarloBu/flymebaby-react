@@ -123,7 +123,7 @@ export function MultiCombobox({
             key={option.code}
             className="flex items-center gap-1 rounded-full bg-white/20 py-0 pl-2 pr-2 text-base transition-all dark:bg-black/20 sm:py-1 sm:pl-3 sm:pr-2"
           >
-            <span>{option.code}</span>
+            <span className="max-w-20 truncate sm:max-w-48">{option.code}</span>
             <div
               role="button"
               tabIndex={0}

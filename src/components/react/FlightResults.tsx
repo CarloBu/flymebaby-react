@@ -98,7 +98,7 @@ function MiniFlightCard({
   const priceColor = getPriceColor(flight.totalPrice, minPrice, maxPrice);
 
   return (
-    <div className="relative inline-block h-20 w-[9.3rem] sm:w-[9.9rem]">
+    <div className="relative inline-block h-[4.5rem] w-[8.8rem] xsm:h-[4.7rem] xsm:w-[9.3rem] sm:h-20 sm:w-[9.85rem]">
       {/* SVG Background */}
       <svg
         width="158"
@@ -106,7 +106,7 @@ function MiniFlightCard({
         viewBox="0 0 158 80"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="absolute left-0 top-0 -ml-1 scale-95 transition-all duration-300 sm:ml-0 sm:scale-100"
+        className="absolute left-0 top-0 -ml-2 -mt-1 scale-90 transition-all duration-300 xsm:-ml-1 xsm:-mt-[0.15rem] xsm:scale-95 sm:ml-0 sm:mt-0 sm:scale-100"
         style={{
           fill: isHovered ? priceColor.backgroundHover : priceColor.background,
           stroke: isHovered
@@ -184,7 +184,7 @@ function MiniCityCard({
   const priceColor = getPriceColor(cityData.minPrice, minPrice, maxPrice);
 
   return (
-    <div className="relative m-2 inline-block h-20 w-48">
+    <div className="relative m-2 inline-block h-20 w-[12.5rem]">
       {/* SVG Background - Updated path with only left cutout */}
       <svg
         width="200"
@@ -208,7 +208,7 @@ function MiniCityCard({
         onClick={onCardClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="absolute left-0 top-0 flex h-20 w-[200px] cursor-pointer flex-col justify-between px-6 py-3"
+        className="absolute left-0 top-0 flex h-20 w-[12.5rem] cursor-pointer flex-col justify-between px-6 py-3"
       >
         <div
           className="truncate font-medium text-gray-800 dark:text-gray-800"
@@ -552,7 +552,7 @@ function CityGroup({
 
       {/* Mini Cards - Show when collapsed */}
       {!isExpanded && (
-        <div className="mini-cards mt-2 flex flex-wrap gap-x-3 gap-y-2 xxsm:gap-x-4 sm:mt-2 sm:gap-x-5 sm:gap-y-4">
+        <div className="mini-cards mb-1 mt-2 flex flex-wrap gap-x-2 gap-y-2 xxsm:gap-x-2 xsm:mb-0 sm:mt-2 sm:gap-x-4 sm:gap-y-4">
           {cityData.flights
             .sort((a, b) => a.totalPrice - b.totalPrice)
             .map((flight, index) => (
@@ -860,7 +860,7 @@ export function FlightResults({
   };
 
   return (
-    <div className="w-fullspace-y-4 md:space-y-8">
+    <div className="w-full space-y-4 md:space-y-8">
       <div className="mb-4 h-8 text-2xl font-bold">
         {isLoading ? (
           <p className="text-gray-600">
@@ -920,7 +920,7 @@ export function FlightResults({
 
                 {/* Mini City Cards - Show when collapsed */}
                 {!openCountries[country] && (
-                  <div className="mini-cards mt-3 flex flex-wrap">
+                  <div className="mini-cards mb-3 mt-3 flex flex-wrap">
                     {Object.entries(countryData.cities)
                       .sort(([, cityDataA], [, cityDataB]) => {
                         return cityDataA.minPrice - cityDataB.minPrice;
