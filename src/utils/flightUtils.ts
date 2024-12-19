@@ -50,10 +50,18 @@ export function calculateTripDays(
   outboundDate: string,
   inboundDate: string,
 ): number {
-  const start = new Date(outboundDate);
-  const end = new Date(inboundDate);
-  const diffTime = Math.abs(end.getTime() - start.getTime());
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const outbound = new Date(outboundDate);
+  const inbound = new Date(inboundDate);
+
+  // Reset time part to compare only dates
+  outbound.setHours(0, 0, 0, 0);
+  inbound.setHours(0, 0, 0, 0);
+
+  // Calculate difference in days
+  const diffTime = inbound.getTime() - outbound.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+  return diffDays;
 }
 
 export function getPriceColor(

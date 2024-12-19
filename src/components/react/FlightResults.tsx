@@ -552,7 +552,7 @@ function CityGroup({
 
       {/* Mini Cards - Show when collapsed */}
       {!isExpanded && (
-        <div className="mini-cards xxsm:gap-x-4 mt-2 flex flex-wrap gap-x-3 gap-y-2 sm:mt-2 sm:gap-x-5 sm:gap-y-4">
+        <div className="mini-cards mt-2 flex flex-wrap gap-x-3 gap-y-2 xxsm:gap-x-4 sm:mt-2 sm:gap-x-5 sm:gap-y-4">
           {cityData.flights
             .sort((a, b) => a.totalPrice - b.totalPrice)
             .map((flight, index) => (
@@ -667,7 +667,22 @@ export function NoResultsMessage({
   );
 }
 
-// Update the main FlightResults component
+// Filter flights within date range
+function isFlightWithinDateRange(
+  flight: Flight,
+  searchParams?: SearchParams,
+): boolean {
+  if (!searchParams) return true;
+
+  const endDate = new Date(searchParams.endDate);
+  endDate.setHours(23, 59, 59, 999); // Set to end of day
+
+  const returnDate = new Date(flight.inbound?.departureTime);
+
+  return returnDate <= endDate;
+}
+
+// Update the main FlightResults component to filter flights
 export function FlightResults({
   flights,
   adults,
@@ -687,12 +702,17 @@ export function FlightResults({
     highlightedFlightId: null,
   });
 
-  // Calculate global price range once
-  const globalMinPrice = Math.min(...flights.map((f) => f.totalPrice));
-  const globalMaxPrice = Math.max(...flights.map((f) => f.totalPrice));
+  // Filter flights before processing
+  const validFlights = flights.filter((flight) =>
+    isFlightWithinDateRange(flight, searchParams),
+  );
 
-  // Group flights by country and city
-  const groupedFlights = flights.reduce(
+  // Calculate global price range from filtered flights
+  const globalMinPrice = Math.min(...validFlights.map((f) => f.totalPrice));
+  const globalMaxPrice = Math.max(...validFlights.map((f) => f.totalPrice));
+
+  // Group filtered flights by country and city
+  const groupedFlights = validFlights.reduce(
     (acc, flight) => {
       const destinationParts = flight.outbound.destinationFull.split(", ");
       const country =
@@ -844,12 +864,12 @@ export function FlightResults({
       <div className="mb-4 h-8 text-2xl font-bold">
         {isLoading ? (
           <p className="text-gray-600">
-            Found {flights.length} flights so far...
+            Found {validFlights.length} flights so far...
           </p>
-        ) : flights.length > 0 ? (
+        ) : validFlights.length > 0 ? (
           <p className="text-gray-600 dark:text-gray-400">
-            Found {flights.length} flight
-            {flights.length !== 1 ? "s" : ""} to explore
+            Found {validFlights.length} flight
+            {validFlights.length !== 1 ? "s" : ""} to explore
           </p>
         ) : null}
       </div>
