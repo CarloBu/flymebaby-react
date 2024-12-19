@@ -254,6 +254,14 @@ export default function FlightSearch() {
     }
   };
 
+  const isFlightWithinDateRange = (flight: Flight) => {
+    if (!endDate) return true;
+    const inboundDate = new Date(flight.inbound.departureTime);
+    const endDateObj = new Date(endDate);
+    endDateObj.setHours(23, 59, 59, 999); // Set to end of day
+    return inboundDate <= endDateObj;
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -315,10 +323,14 @@ export default function FlightSearch() {
       };
 
       const apiUrl = "https://flymebaby-python.onrender.com";
+      //const apiUrl = "http://127.0.0.1:5000";
       const searchUrl = `${apiUrl}/api/search-flights?${new URLSearchParams(
         searchParamsForUrl as any,
       )}`;
-
+      //console.log(
+      //  "Raw API request:",
+      //  JSON.stringify({ url: searchUrl, path: new URL(searchUrl).pathname }),
+      //);
       const { eventSource, cleanup } = createEventSourceWithCleanup(searchUrl);
       cleanupRef.current = cleanup;
 
@@ -345,13 +357,19 @@ export default function FlightSearch() {
             block: "start",
           });
         }, 100);
+
         if (event.data === "END") {
           cleanup();
           setLoading(false);
 
-          if (flights.length === 0) {
-            setNoFlightsFound(true);
-          }
+          // Check if we have any flights that meet the date criteria
+          setFlights((currentFlights) => {
+            const validFlights = currentFlights.filter(isFlightWithinDateRange);
+            if (validFlights.length === 0) {
+              setNoFlightsFound(true);
+            }
+            return validFlights;
+          });
           return;
         }
 
@@ -365,10 +383,14 @@ export default function FlightSearch() {
             return;
           }
 
-          setFlights((prevFlights) => {
-            const newFlights = [...prevFlights, data as Flight];
-            return newFlights.sort((a, b) => a.totalPrice - b.totalPrice);
-          });
+          // Only add flights that meet the date criteria
+          const flight = data as Flight;
+          if (isFlightWithinDateRange(flight)) {
+            setFlights((prevFlights) => {
+              const newFlights = [...prevFlights, flight];
+              return newFlights.sort((a, b) => a.totalPrice - b.totalPrice);
+            });
+          }
 
           if (loading) {
             setLoading(false);
@@ -507,10 +529,10 @@ export default function FlightSearch() {
 
           <motion.div
             layout="position"
-            className="layout-animation flex flex-wrap items-center justify-end gap-2"
+            className="layout-animation flex flex-wrap items-center justify-end gap-x-1 gap-y-4 xsm:gap-x-2"
             role="group"
           >
-            for
+            <span className="mr-1 xsm:mr-0">for</span>
             <NumberModal
               value={adults}
               onChange={setAdults}
@@ -593,10 +615,7 @@ export default function FlightSearch() {
             </div>
           </PopMotion>
 
-          <div
-            className="flex flex-wrap items-center justify-end gap-2"
-            role="group"
-          >
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <DatePickerWithRange
               dateRange={dateRange}
               onDateRangeChange={setDateRange}
@@ -640,7 +659,10 @@ export default function FlightSearch() {
             </PopMotion>
           )}
 
-          <div className="-mb-6 flex flex-wrap items-center justify-end gap-2">
+          <PopMotion
+            key="price-section"
+            className="-mb-6 flex flex-wrap items-center justify-end gap-2"
+          >
             <span id="price-label">with a maximum budget of</span>
             <PriceModal
               value={maxPrice}
@@ -649,10 +671,10 @@ export default function FlightSearch() {
               max={10000}
               aria-label="Set a maximum budget"
             />
-          </div>
+          </PopMotion>
         </div>
         <div ref={submitResultsFold} className="h-1 w-full"></div>
-        <div className="text-center">
+        <PopMotion key="search-button-section" className="text-center">
           <button
             type="submit"
             className="button-animation mb-10 inline-flex select-none items-center justify-center rounded-full bg-black px-9 py-5 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-gray-200"
@@ -665,7 +687,7 @@ export default function FlightSearch() {
           >
             {loading ? "Searching..." : "Find Flights"}
           </button>
-        </div>
+        </PopMotion>
       </form>
 
       <div

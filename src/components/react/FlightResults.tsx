@@ -531,10 +531,10 @@ function CityGroup({
         className="mb-3 cursor-pointer px-2 text-xl font-semibold text-gray-700 transition-colors hover:text-black dark:text-gray-200 dark:hover:text-gray-400 sm:px-0"
         onClick={handleToggle}
       >
-        <div className="mr-1 mt-4 flex select-none items-center justify-between gap-2 sm:mt-1">
+        <div className="mr-1 mt-4 flex select-none items-start justify-between gap-2 sm:mt-1">
           <div className="flex items-baseline gap-2">
             {city}
-            <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+            <span className="whitespace-nowrap text-sm font-normal text-gray-500 dark:text-gray-400">
               ({cityData.flights.length} flight
               {cityData.flights.length !== 1 ? "s" : ""})
             </span>
@@ -869,7 +869,7 @@ export function FlightResults({
         ) : validFlights.length > 0 ? (
           <p className="text-gray-600 dark:text-gray-400">
             Found {validFlights.length} flight
-            {validFlights.length !== 1 ? "s" : ""} to explore
+            {validFlights.length !== 1 ? "s" : ""} to grab
           </p>
         ) : null}
       </div>
@@ -903,7 +903,7 @@ export function FlightResults({
                   <div className="mr-1 flex select-none items-center justify-between gap-2 sm:-mr-1">
                     <div className="flex items-center gap-2">
                       {country}
-                      <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                      <span className="whitespace-nowrap text-sm font-normal text-gray-500 dark:text-gray-400">
                         ({totalFlights} flight{totalFlights !== 1 ? "s" : ""})
                       </span>
                     </div>

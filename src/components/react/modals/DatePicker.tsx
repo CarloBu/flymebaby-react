@@ -10,6 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { PopMotion } from "@/components/react/motion/PopMotion";
 
 interface DatePickerWithRangeProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -52,7 +53,10 @@ export function DatePickerWithRange({
   };
 
   return (
-    <div className={cn("relative inline-flex gap-2", className)} ref={modalRef}>
+    <PopMotion
+      key="date-section"
+      className={cn("relative inline-flex gap-2", className)}
+    >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
         {/* Start Date Picker - Mobile */}
         <div className="flex w-full items-center justify-end gap-2 sm:hidden">
@@ -261,6 +265,6 @@ export function DatePickerWithRange({
           </Popover>
         </div>
       </div>
-    </div>
+    </PopMotion>
   );
 }
