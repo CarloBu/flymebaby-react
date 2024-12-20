@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import FlightSearch from '../components/react/FlightSearch';
 import { ThemeToggle } from '../components/ThemeToggle';
-import ryanairLogo from '../assets/ryanair.jpg';
+import ryanairLogo from '/public/ryanair.jpg';
 import { Image } from 'astro:assets';
 
 const pageTitle = 'Gimme Flights';
@@ -74,16 +74,11 @@ const pageDescription =
 								></path>
 							</mask>
 						</defs>
-						<Image
-							src={ryanairLogo}
-							width={256}
-							height={256}
-							alt='Ryanair Logo'
-							class='h-14 w-14'
-							style={{
-								maskImage: 'url(#logoMask)',
-								WebkitMaskImage: 'url(#logoMask)',
-							}}
+						<image
+							href={ryanairLogo.src}
+							width='56'
+							height='56'
+							mask='url(#logoMask)'
 						/>
 					</svg>
 				</div>
