@@ -97,7 +97,7 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
     return pill;
   };
 
-  // Add walls (invisible boundaries)
+  // walls (invisible boundaries)
   const wallOptions = {
     isStatic: true,
     render: { fillStyle: "transparent" },
@@ -219,7 +219,7 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
   // Ensure mouse events work properly
   render.mouse = mouse;
 
-  // Add mouse constraint to world
+  // mouse constraint to world
   Composite.add(world, mouseConstraint);
 
   // Simple mobile optimization

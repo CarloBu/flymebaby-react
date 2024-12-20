@@ -8,6 +8,7 @@ import {
 } from "../../utils/flightUtils";
 import { useState, useEffect } from "react";
 import { Frown } from "lucide-react";
+import type { SearchParams } from "../../types/search";
 
 interface FlightResultsProps {
   flights: Flight[];
@@ -19,22 +20,7 @@ interface FlightResultsProps {
   searchParams?: SearchParams;
 }
 
-interface SearchParams {
-  tripType: "oneWay" | "return";
-  startDate: string;
-  endDate: string;
-  maxPrice: number;
-  minDays: number;
-  maxDays: number;
-  originAirports: string[];
-  wantedCountries: string[];
-  adults: number;
-  teens: number;
-  children: number;
-  infants: number;
-}
-
-// Add export to the LoadingIndicator component
+// Displays a loading spinner with a message while searching for flights
 export function LoadingIndicator() {
   return (
     <div className="mx-auto flex max-w-3xl select-none flex-col items-center justify-center rounded-3xl border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
@@ -54,7 +40,8 @@ export function LoadingIndicator() {
   );
 }
 
-// Add new MiniFlightCard component
+// Displays a compact flight card with basic info when results are collapsed
+// Shows departure/return times, trip duration, and price with color coding
 function MiniFlightCard({
   flight,
   minPrice,
@@ -68,12 +55,14 @@ function MiniFlightCard({
   maxPrice: number;
   onClick?: () => void;
   onFlightClick?: (flightId: string) => void;
-  tripType?: "oneWay" | "return";
+  tripType?: "oneWay" | "return" | "weekend" | "longWeekend";
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const flightId = `${flight.outbound.origin}-${flight.outbound.destination}-${flight.outbound.departureTime}`;
   const tripDays =
-    tripType === "return"
+    tripType === "return" ||
+    tripType === "weekend" ||
+    tripType === "longWeekend"
       ? calculateTripDays(
           flight.outbound.departureTime,
           flight.inbound.departureTime,
@@ -97,8 +86,13 @@ function MiniFlightCard({
 
   const priceColor = getPriceColor(flight.totalPrice, minPrice, maxPrice);
 
+  const showReturnInfo =
+    tripType === "return" ||
+    tripType === "weekend" ||
+    tripType === "longWeekend";
+
   return (
-    <div className="relative inline-block h-[4.5rem] w-[8.8rem] xsm:h-[4.7rem] xsm:w-[9.3rem] sm:h-20 sm:w-[9.85rem]">
+    <div className="relative aspect-[158/80] w-full">
       {/* SVG Background */}
       <svg
         width="158"
@@ -106,7 +100,7 @@ function MiniFlightCard({
         viewBox="0 0 158 80"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="absolute left-0 top-0 -ml-2 -mt-1 scale-90 transition-all duration-300 xsm:-ml-1 xsm:-mt-[0.15rem] xsm:scale-95 sm:ml-0 sm:mt-0 sm:scale-100"
+        className="absolute left-0 top-0 h-full w-full"
         style={{
           fill: isHovered ? priceColor.backgroundHover : priceColor.background,
           stroke: isHovered
@@ -122,13 +116,13 @@ function MiniFlightCard({
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col justify-between px-5 py-3"
+        className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col justify-between px-[12.5%] py-[8%]"
       >
         <div className="flex items-center justify-between">
-          <span className="whitespace-nowrap text-[0.938rem] font-medium text-gray-800 dark:text-gray-800">
+          <span className="whitespace-nowrap text-[clamp(0.7rem,3.5vw,0.938rem)] font-medium text-gray-800 dark:text-gray-800 xsm:text-[0.9rem]">
             {formatDateTime(flight.outbound.departureTime, true)}
           </span>
-          {tripType === "return" && (
+          {showReturnInfo && (
             <>
               <span className="px-[2px] text-gray-600 dark:text-gray-800">
                 <svg
@@ -137,7 +131,7 @@ function MiniFlightCard({
                   viewBox="0 0 8 8"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
-                  className="translate-y-[1px] -rotate-90"
+                  className="h-[0.5em] w-[0.5em] translate-y-[1px] -rotate-90"
                 >
                   <path
                     d="M4.35355 7.35355C4.15829 7.54882 3.84171 7.54882 3.64645 7.35355L0.464466 4.17157C0.269204 3.97631 0.269204 3.65973 0.464466 3.46447C0.659728 3.2692 0.976311 3.2692 1.17157 3.46447L4 6.29289L6.82843 3.46447C7.02369 3.2692 7.34027 3.2692 7.53553 3.46447C7.7308 3.65973 7.7308 3.97631 7.53553 4.17157L4.35355 7.35355ZM4.5 0L4.5 7H3.5L3.5 0L4.5 0Z"
@@ -145,19 +139,22 @@ function MiniFlightCard({
                   />
                 </svg>
               </span>
-              <span className="whitespace-nowrap text-[0.938rem] font-medium text-gray-800 dark:text-gray-800">
+              <span className="whitespace-nowrap text-[clamp(0.7rem,3.5vw,0.938rem)] font-medium text-gray-800 dark:text-gray-800 xsm:text-[0.9rem]">
                 {formatDateTime(flight.inbound.departureTime, true)}
               </span>
             </>
           )}
         </div>
         <div className="flex items-center justify-between">
-          {tripType === "return" && tripDays && (
-            <span className="text-xs text-gray-600 dark:text-gray-700">
+          {showReturnInfo && tripDays && (
+            <span className="text-[clamp(0.65rem,2.8vw,0.75rem)] text-gray-600 dark:text-gray-700 xsm:text-xs">
               {tripDays} day{tripDays !== 1 ? "s" : ""}
             </span>
           )}
-          <span className="font-bold" style={{ color: priceColor.text }}>
+          <span
+            className="text-[clamp(0.7rem,4vw,1rem)] font-bold xsm:text-[1.1rem]"
+            style={{ color: priceColor.text }}
+          >
             €{Math.round(flight.totalPrice)}
           </span>
         </div>
@@ -166,7 +163,8 @@ function MiniFlightCard({
   );
 }
 
-// Update the MiniCityCard component
+// Displays a compact city card showing total flights and lowest price
+// Used in collapsed country view to show city-level summaries
 function MiniCityCard({
   city,
   cityData,
@@ -184,15 +182,15 @@ function MiniCityCard({
   const priceColor = getPriceColor(cityData.minPrice, minPrice, maxPrice);
 
   return (
-    <div className="relative m-2 inline-block h-20 w-[12.5rem]">
-      {/* SVG Background - Updated path with only left cutout */}
+    <div className="relative aspect-[200/80] w-full">
+      {/* SVG Background */}
       <svg
         width="200"
         height="80"
         viewBox="0 0 200 80"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="absolute left-0 top-0 transition-all duration-300"
+        className="absolute left-0 top-0 h-full w-full"
         style={{
           fill: isHovered ? priceColor.backgroundHover : priceColor.background,
           stroke: isHovered
@@ -208,20 +206,23 @@ function MiniCityCard({
         onClick={onCardClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="absolute left-0 top-0 flex h-20 w-[12.5rem] cursor-pointer flex-col justify-between px-6 py-3"
+        className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col justify-between px-6 py-3"
       >
         <div
-          className="truncate font-medium text-gray-800 dark:text-gray-800"
+          className="ssm:text-base truncate text-[5vw] font-medium text-gray-800 dark:text-gray-800"
           title={city}
         >
           {city}
         </div>
         <div className="flex items-center justify-between gap-2">
-          <span className="text-xs text-gray-600 dark:text-gray-700">
+          <span className="ssm:text-xs text-[4vw] text-gray-600 dark:text-gray-700">
             {cityData.flights.length} flight
             {cityData.flights.length !== 1 ? "s" : ""}
           </span>
-          <span className="font-bold" style={{ color: priceColor.text }}>
+          <span
+            className="ssm:text-[1.1rem] text-[6vw] font-bold"
+            style={{ color: priceColor.text }}
+          >
             €{Math.round(cityData.minPrice)}
           </span>
         </div>
@@ -243,6 +244,7 @@ interface CityGroupProps {
   isHighlighted?: boolean;
   onExpandChange?: (expanded: boolean) => void;
   onFlightHighlight?: (flightId: string | null) => void;
+  tripType?: "oneWay" | "return" | "weekend" | "longWeekend";
 }
 
 // Add these utility functions to src/utils/flightUtils.ts
@@ -271,7 +273,11 @@ function formatTime(dateString: string): string {
   });
 }
 
-// Add this new component before the CityGroup component
+// Displays detailed flight information including:
+// - Origin/destination with full names
+// - Departure/return dates and times
+// - Price breakdown with passenger counts
+// - Direct booking link to Ryanair
 function DetailedFlightCard({
   flight,
   adults,
@@ -293,13 +299,18 @@ function DetailedFlightCard({
   minPrice: number;
   maxPrice: number;
   isHighlighted?: boolean;
-  tripType?: "oneWay" | "return";
+  tripType?: "oneWay" | "return" | "weekend" | "longWeekend";
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const priceColor = getPriceColor(flight.totalPrice, minPrice, maxPrice);
   const flightId = `${flight.outbound.origin}-${flight.outbound.destination}-${flight.outbound.departureTime}`;
   const infantFee =
-    INFANT_SEAT_PRICE * infants * (tripType === "return" ? 2 : 1);
+    INFANT_SEAT_PRICE * infants * (tripType === "oneWay" ? 1 : 2);
+
+  const showReturnInfo =
+    tripType === "return" ||
+    tripType === "weekend" ||
+    tripType === "longWeekend";
 
   return (
     <div
@@ -326,7 +337,7 @@ function DetailedFlightCard({
             </div>
 
             <div className="flex flex-col items-center px-2 md:px-4">
-              {tripType === "return" && tripDays && (
+              {showReturnInfo && tripDays && (
                 <div className="flex items-center gap-2 md:gap-4">
                   <div className="hidden h-[1px] w-8 border-b border-dashed border-gray-300 dark:border-gray-400 md:block"></div>
                   <div className="flex items-baseline gap-1.5 text-gray-600 dark:text-gray-200">
@@ -353,7 +364,7 @@ function DetailedFlightCard({
             </div>
           </div>
 
-          <div className="flex flex-col justify-between gap-4 border-t border-dashed border-gray-200 pt-4 dark:border-gray-400 min-[450px]:flex-row md:gap-0">
+          <div className="flex flex-col justify-between gap-4 border-t border-dashed border-gray-200 pt-4 dark:border-gray-400 xsm:flex-row md:gap-0">
             <div className="space-y-2">
               <div className="text-sm font-medium text-gray-500 dark:text-gray-200">
                 Departure
@@ -370,7 +381,7 @@ function DetailedFlightCard({
                 from {flight.outbound.origin}
               </div>
             </div>
-            {tripType === "return" && (
+            {showReturnInfo && (
               <div className="space-y-2 md:text-right">
                 <div className="text-sm font-medium text-gray-500 dark:text-gray-200">
                   Return
@@ -476,7 +487,8 @@ function DetailedFlightCard({
   );
 }
 
-// Update the CityGroup component
+// Groups flights by city and manages expansion/collapse state
+// Shows either MiniFlightCards when collapsed or DetailedFlightCards when expanded
 function CityGroup({
   city,
   cityData,
@@ -498,7 +510,7 @@ function CityGroup({
   maxPrice: number;
   highlightedFlightId?: string | null;
   onFlightHighlight?: (flightId: string | null) => void;
-  tripType?: "oneWay" | "return";
+  tripType?: "oneWay" | "return" | "weekend" | "longWeekend";
 }) {
   const [internalExpanded, setInternalExpanded] = useState(false);
   const isExpanded = controlledExpanded ?? internalExpanded;
@@ -521,9 +533,9 @@ function CityGroup({
   return (
     <div
       id={`city-group-${city.toLowerCase().replace(/\s+/g, "-")}`}
-      className={`mb-2 rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 max-[450px]:p-2 md:mb-4 md:p-6 ${
+      className={`mb-2 rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 xsm:p-2 md:mb-4 md:p-6 ${
         isHighlighted
-          ? "border-gray-400 dark:border-gray-400"
+          ? "ring-2 ring-gray-500 dark:ring-gray-200"
           : "border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500"
       }`}
     >
@@ -552,21 +564,25 @@ function CityGroup({
 
       {/* Mini Cards - Show when collapsed */}
       {!isExpanded && (
-        <div className="mini-cards mb-1 mt-2 flex flex-wrap gap-x-2 gap-y-2 xxsm:gap-x-2 xsm:mb-0 sm:mt-2 sm:gap-x-4 sm:gap-y-4">
+        <div className="mini-cards mb-1 grid grid-cols-2 gap-2 px-1 xsm:flex xsm:flex-wrap xsm:gap-4">
           {cityData.flights
             .sort((a, b) => a.totalPrice - b.totalPrice)
             .map((flight, index) => (
-              <MiniFlightCard
+              <div
                 key={`mini-${flight.outbound.origin}-${flight.outbound.destination}-${index}`}
-                flight={flight}
-                minPrice={minPrice}
-                maxPrice={maxPrice}
-                onClick={handleToggle}
-                onFlightClick={(flightId) => {
-                  handleFlightClick(flightId);
-                }}
-                tripType={tripType}
-              />
+                className="w-full xsm:w-auto xsm:min-w-[9.8rem] xsm:max-w-44"
+              >
+                <MiniFlightCard
+                  flight={flight}
+                  minPrice={minPrice}
+                  maxPrice={maxPrice}
+                  onClick={handleToggle}
+                  onFlightClick={(flightId) => {
+                    handleFlightClick(flightId);
+                  }}
+                  tripType={tripType}
+                />
+              </div>
             ))}
         </div>
       )}
@@ -605,19 +621,18 @@ function CityGroup({
   );
 }
 
-// Add this near the top of the file, after the interfaces
 interface CountryOpenState {
   [key: string]: boolean;
 }
 
-// Add this near the top with other state interfaces
 interface ScrollState {
   highlightedCountry: string | null;
   highlightedCity: string | null;
   highlightedFlightId: string | null;
 }
 
-// Add this new component near the top of the file
+// Displays a message when no flights are found matching search criteria
+// Includes helpful suggestions for modifying the search
 export function NoResultsMessage({
   searchParams,
 }: {
@@ -644,30 +659,12 @@ export function NoResultsMessage({
         <li>Consider increasing your maximum price</li>
         <li>Try searching for different destinations</li>
       </ul>
-      {/*<div className="text-sm text-gray-500 dark:text-gray-500">
-        Search parameters:
-        <div className="mt-2 space-y-1">
-          {searchParams && (
-            <>
-              <div>
-                Dates: {searchParams.startDate} - {searchParams.endDate}
-              </div>
-              <div>From: {searchParams.originAirports.join(", ")}</div>
-              <div>To: {searchParams.wantedCountries.join(", ")}</div>
-              <div>Max price: €{searchParams.maxPrice}</div>
-              <div>
-                Stay duration: {searchParams.minDays}-{searchParams.maxDays}{" "}
-                days
-              </div>
-            </>
-          )}
-        </div>
-      </div>*/}
     </div>
   );
 }
 
-// Filter flights within date range
+// Validates if a flight's return date falls within the selected date range
+// Used to filter out flights that return after the user's selected end date
 function isFlightWithinDateRange(
   flight: Flight,
   searchParams?: SearchParams,
@@ -682,7 +679,9 @@ function isFlightWithinDateRange(
   return returnDate <= endDate;
 }
 
-// Update the main FlightResults component to filter flights
+// Main component that organizes and displays flight search results
+// Groups flights by country and city, manages expansion states,
+// and handles highlighting of selected flights
 export function FlightResults({
   flights,
   adults,
@@ -702,7 +701,7 @@ export function FlightResults({
     highlightedFlightId: null,
   });
 
-  // Filter flights before processing
+  // Filter flights and calculate price ranges for color coding
   const validFlights = flights.filter((flight) =>
     isFlightWithinDateRange(flight, searchParams),
   );
@@ -711,7 +710,7 @@ export function FlightResults({
   const globalMinPrice = Math.min(...validFlights.map((f) => f.totalPrice));
   const globalMaxPrice = Math.max(...validFlights.map((f) => f.totalPrice));
 
-  // Group filtered flights by country and city
+  // Group flights by country and city for hierarchical display
   const groupedFlights = validFlights.reduce(
     (acc, flight) => {
       const destinationParts = flight.outbound.destinationFull.split(", ");
@@ -754,7 +753,7 @@ export function FlightResults({
     {} as Record<string, CountryData>,
   );
 
-  // Add this function to handle country toggles
+  // Handlers for expanding/collapsing and highlighting sections
   const toggleCountry = (country: string) => {
     setOpenCountries((prev) => ({
       ...prev,
@@ -762,18 +761,11 @@ export function FlightResults({
     }));
   };
 
-  // Add function to handle city card click
   const handleCityCardClick = (country: string, city: string) => {
     // Open the country if it's not already open
     setOpenCountries((prev) => ({
       ...prev,
       [country]: true,
-    }));
-
-    // Expand the target city group
-    setExpandedCities((prev) => ({
-      ...prev,
-      [city]: true,
     }));
 
     // Set the highlighted elements
@@ -791,7 +783,7 @@ export function FlightResults({
       if (cityElement) {
         cityElement.scrollIntoView({
           behavior: "smooth",
-          block: "start",
+          block: "center",
         });
       }
     }, 100);
@@ -806,7 +798,6 @@ export function FlightResults({
     }, 2000);
   };
 
-  // Add handler for city group expansion changes
   const handleCityExpandChange = (city: string, expanded: boolean) => {
     setExpandedCities((prev) => ({
       ...prev,
@@ -814,7 +805,6 @@ export function FlightResults({
     }));
   };
 
-  // Add handleCountryCardClick function
   const handleCountryCardClick = (country: string) => {
     // Open the country
     setOpenCountries((prev) => ({
@@ -889,7 +879,7 @@ export function FlightResults({
             <div
               key={country}
               id={`country-group-${country.toLowerCase().replace(/\s+/g, "-")}`}
-              className={`my-4 w-full rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 max-[450px]:p-2 sm:p-6 ${
+              className={`my-4 w-full rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 xsm:p-2 sm:p-6 ${
                 scrollState.highlightedCountry === country
                   ? "border-gray-300 dark:border-gray-400"
                   : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
@@ -920,20 +910,26 @@ export function FlightResults({
 
                 {/* Mini City Cards - Show when collapsed */}
                 {!openCountries[country] && (
-                  <div className="mini-cards mb-3 mt-3 flex flex-wrap">
+                  <div className="mini-cards mb-3 flex flex-wrap gap-2 px-1 xsm:gap-4">
                     {Object.entries(countryData.cities)
                       .sort(([, cityDataA], [, cityDataB]) => {
                         return cityDataA.minPrice - cityDataB.minPrice;
                       })
                       .map(([city, cityData]) => (
-                        <MiniCityCard
+                        <div
                           key={`mini-${city}`}
-                          city={city}
-                          cityData={cityData}
-                          onCardClick={() => handleCityCardClick(country, city)}
-                          minPrice={globalMinPrice}
-                          maxPrice={globalMaxPrice}
-                        />
+                          className="ssm:w-[13.28rem] w-[100%]"
+                        >
+                          <MiniCityCard
+                            city={city}
+                            cityData={cityData}
+                            onCardClick={() =>
+                              handleCityCardClick(country, city)
+                            }
+                            minPrice={globalMinPrice}
+                            maxPrice={globalMaxPrice}
+                          />
+                        </div>
                       ))}
                   </div>
                 )}

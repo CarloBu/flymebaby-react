@@ -11,7 +11,6 @@ const {
 	description = 'Find the best Ryanair flight deals. Compare prices and book cheap flights through our flight search engine.',
 } = Astro.props;
 
-// Generate canonical URL
 const canonicalURL = new URL(
 	Astro.url.pathname,
 	Astro.site || 'https://gimme.flights'
@@ -111,28 +110,6 @@ const canonicalURL = new URL(
 			rel='stylesheet'
 		/>
 
-		<!-- Theme Script -->
-		<!--<script is:inline>
-			const theme = (() => {
-				if (
-					typeof localStorage !== 'undefined' &&
-					localStorage.getItem('theme')
-				) {
-					return localStorage.getItem('theme');
-				}
-				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-					return 'dark';
-				}
-				return 'light';
-			})();
-
-			if (theme === 'dark') {
-				document.documentElement.classList.add('dark');
-			} else {
-				document.documentElement.classList.remove('dark');
-			}
-		</script>-->
-
 		<!-- Structured Data -->
 		<script type='application/ld+json'>
 			{
@@ -165,7 +142,6 @@ const canonicalURL = new URL(
 		height: 100%;
 	}
 
-	/* Improve text rendering */
 	html {
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;

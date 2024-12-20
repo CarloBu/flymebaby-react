@@ -15,27 +15,22 @@ import { DateRange } from "react-day-picker";
 import { DatePickerWithRange } from "./modals/DatePicker";
 import { format } from "date-fns";
 import { MultiCombobox } from "@/components/react/modals/multi-combobox";
-import { motion } from "framer-motion";
 import { PopMotion } from "@/components/react/motion/PopMotion";
 import { PlaneTakeoff, PlaneLanding, CalendarFold } from "lucide-react";
-
-interface SearchParams {
-  tripType: "oneWay" | "return";
-  startDate: string;
-  endDate: string;
-  maxPrice: number;
-  minDays: number;
-  maxDays: number;
-  originAirports: string[];
-  wantedCountries: string[];
-  adults: number;
-  teens: number;
-  children: number;
-  infants: number;
-}
+import {
+  isWeekend,
+  isFriday,
+  isSaturday,
+  isSunday,
+  isThursday,
+  isMonday,
+} from "date-fns";
+import type { SearchParams } from "../../types/search";
+import { addWeeks, nextFriday, nextThursday, addDays } from "date-fns";
 
 interface ModalState {
   tripType: boolean;
+  weekendMode: boolean;
   passengers: boolean;
   locations: boolean;
   dates: boolean;
@@ -53,6 +48,58 @@ interface ApiResponse {
   message?: string;
 }
 
+interface WeekendRange {
+  startDate: Date;
+  endDate: Date;
+}
+
+type TripType = "oneWay" | "return" | "weekend" | "longWeekend";
+
+// Helper function to generate valid weekend date ranges based on weekendCount and type
+// For regular weekends: Friday-Sunday
+// For long weekends: Thursday-Monday
+function generateWeekendDates(
+  weekendCount: number,
+  isLongWeekend: boolean,
+): WeekendRange {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Check if current weekend is still valid
+  const friday = new Date(today);
+  while (friday.getDay() !== 5) {
+    // 5 = Friday
+    friday.setDate(friday.getDate() - 1);
+  }
+
+  // If it's before or on Friday and the time is before 17:00 on Friday,
+  // include current weekend
+  const isBeforeFridayEvening =
+    today <= friday && (today.getDay() !== 5 || today.getHours() < 17);
+
+  let startDay;
+  if (isBeforeFridayEvening) {
+    // Use current weekend's Friday/Thursday
+    startDay = isLongWeekend
+      ? new Date(friday.setDate(friday.getDate() - 1)) // Thursday
+      : friday;
+  } else {
+    // Use next weekend
+    startDay = isLongWeekend ? nextThursday(today) : nextFriday(today);
+  }
+
+  const endDay = addDays(
+    addWeeks(startDay, weekendCount - 1),
+    isLongWeekend ? 4 : 2,
+  );
+
+  return {
+    startDate: startDay,
+    endDate: endDay,
+  };
+}
+
+// Handles API requests with a timeout to prevent hanging requests
 const fetchWithTimeout = async (url: string, timeout = 5000) => {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -67,6 +114,8 @@ const fetchWithTimeout = async (url: string, timeout = 5000) => {
   }
 };
 
+// Creates and manages SSE connection for real-time flight search results
+// Returns cleanup function to properly close connection
 const createEventSourceWithCleanup = (url: string) => {
   const eventSource = new EventSource(url, { withCredentials: false });
 
@@ -79,8 +128,86 @@ const createEventSourceWithCleanup = (url: string) => {
   return { eventSource, cleanup };
 };
 
+// Validates if a date is a valid weekend outbound date based on mode,
+// I'm tired debugging python backend, so it's easier for me just filter incoming flights to fit into date range :P
+// Default mode: Friday or Saturday
+// Relaxed mode: Thursday, Friday or Saturday
+const isValidWeekendOutbound = (
+  date: Date,
+  mode: "default" | "relaxed",
+): boolean => {
+  if (mode === "default") {
+    return isFriday(date) || isSaturday(date);
+  }
+  return isThursday(date) || isFriday(date) || isSaturday(date);
+};
+
+// Validates if a date is a valid weekend return date based on outbound date
+// Default mode: Saturday or Sunday for Friday departures
+// Relaxed mode: Sunday or Monday for Thursday/Friday departures
+const isValidWeekendReturn = (
+  date: Date,
+  mode: "default" | "relaxed",
+  outboundDate: Date,
+): boolean => {
+  if (mode === "default") {
+    return isSaturday(date) || isSunday(date);
+  }
+  if (isThursday(outboundDate)) {
+    return isSaturday(date) || isSunday(date);
+  }
+  return isSunday(date) || isMonday(date);
+};
+
+// Checks if time is after standard work hours (17:00/5PM)
+// Used for validating Friday evening departures
+const isOutsideWorkHours = (date: Date): boolean => {
+  const hours = date.getHours();
+  return hours >= 17; // After 5 PM
+};
+
+// Validates if a flight matches weekend trip criteria
+// Regular weekend: Depart Friday evening/Saturday, return Saturday/Sunday
+// Long weekend: Depart Thursday-Saturday, return based on departure day
+const isValidWeekendFlight = (
+  flight: Flight,
+  isLongWeekend: boolean,
+): boolean => {
+  const outboundDate = new Date(flight.outbound.departureTime);
+  const returnDate = new Date(flight.inbound.departureTime);
+
+  if (!isLongWeekend) {
+    // Regular weekend
+    const isValidOutbound =
+      (isFriday(outboundDate) && isOutsideWorkHours(outboundDate)) ||
+      isSaturday(outboundDate);
+    const isValidReturn = isSaturday(returnDate) || isSunday(returnDate);
+    return isValidOutbound && isValidReturn;
+  } else {
+    // Long weekend
+    const isValidOutbound =
+      isThursday(outboundDate) ||
+      isFriday(outboundDate) ||
+      isSaturday(outboundDate);
+
+    if (isThursday(outboundDate)) {
+      return (
+        isValidOutbound && (isSaturday(returnDate) || isSunday(returnDate))
+      );
+    } else {
+      return isValidOutbound && (isSunday(returnDate) || isMonday(returnDate));
+    }
+  }
+};
+
+// Type guard to check if trip type is weekend-related
+const isWeekendTripType = (type: TripType): boolean => {
+  return type === "weekend" || type === "longWeekend";
+};
+
 export default function FlightSearch() {
-  const [tripType, setTripType] = useState<"oneWay" | "return">("return");
+  // State for form values and UI control
+  const [tripType, setTripType] = useState<TripType>("return");
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -99,6 +226,7 @@ export default function FlightSearch() {
   const [searchParams, setSearchParams] = useState<SearchParams | null>(null);
   const [activeModal, setActiveModal] = useState<ModalState>({
     tripType: false,
+    weekendMode: false,
     passengers: false,
     locations: false,
     dates: false,
@@ -111,8 +239,11 @@ export default function FlightSearch() {
     to: endDate ? new Date(endDate) : undefined,
   });
   const [noFlightsFound, setNoFlightsFound] = useState(false);
+  const [weekendCount, setWeekendCount] = useState<number>(4);
 
+  // Cleanup reference for SSE connection
   const cleanupRef = React.useRef<(() => void) | null>(null);
+  // Reference for scroll behavior after search
   const submitResultsFold = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -136,13 +267,17 @@ export default function FlightSearch() {
     }
   }, [dateRange]);
 
-  const updateFormForTripType = (type: "oneWay" | "return") => {
+  // Updates form state based on selected trip type
+  // Resets relevant fields for different trip types
+  const updateFormForTripType = (type: TripType) => {
     setTripType(type);
   };
 
+  // Persists form data to localStorage for user convenience
   const saveFormData = () => {
     const dataToSave = {
       tripType,
+      weekendCount,
       adults,
       teens,
       children,
@@ -164,11 +299,14 @@ export default function FlightSearch() {
     localStorage.setItem("flightSearchPreferences", JSON.stringify(dataToSave));
   };
 
+  // Loads saved form data from localStorage
+  // Initializes default values if no saved data exists
   const loadFormData = () => {
     const savedData = localStorage.getItem("flightSearchPreferences");
 
     if (!savedData) {
       setTripType("return");
+      setWeekendCount(4);
       setAdults(1);
       setTeens(0);
       setChildren(0);
@@ -190,7 +328,7 @@ export default function FlightSearch() {
       setPassengers([]);
 
       if (formData.tripType) {
-        setTripType(formData.tripType as "oneWay" | "return");
+        setTripType(formData.tripType as TripType);
       }
       if (formData.adults) {
         setAdults(Number(formData.adults));
@@ -235,25 +373,43 @@ export default function FlightSearch() {
         setSelectedCountries(formData.wantedCountries);
       }
       if (formData.dateRange) {
-        setDateRange({
+        const newDateRange = {
           from: formData.dateRange.from
             ? new Date(formData.dateRange.from)
             : undefined,
           to: formData.dateRange.to
             ? new Date(formData.dateRange.to)
             : undefined,
-        });
+        };
+        setDateRange(newDateRange);
+        if (newDateRange.from) {
+          setStartDate(format(newDateRange.from, "yyyy-MM-dd"));
+        }
+        if (newDateRange.to) {
+          setEndDate(format(newDateRange.to, "yyyy-MM-dd"));
+        }
       } else if (formData.startDate || formData.endDate) {
-        setDateRange({
+        const newDateRange = {
           from: formData.startDate ? new Date(formData.startDate) : undefined,
           to: formData.endDate ? new Date(formData.endDate) : undefined,
-        });
+        };
+        setDateRange(newDateRange);
+        if (formData.startDate) {
+          setStartDate(formData.startDate);
+        }
+        if (formData.endDate) {
+          setEndDate(formData.endDate);
+        }
+      }
+      if (formData.weekendCount) {
+        setWeekendCount(Number(formData.weekendCount));
       }
     } catch (error) {
-      //console.error("Error loading saved preferences:", error);
+      console.error("Error loading saved preferences:", error);
     }
   };
 
+  // Validates if a flight's return date is within selected date range
   const isFlightWithinDateRange = (flight: Flight) => {
     if (!endDate) return true;
     const inboundDate = new Date(flight.inbound.departureTime);
@@ -262,6 +418,8 @@ export default function FlightSearch() {
     return inboundDate <= endDateObj;
   };
 
+  // Handles form submission and initiates flight search
+  // Sets up SSE connection for real-time results
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -274,13 +432,37 @@ export default function FlightSearch() {
       cleanupRef.current();
     }
 
+    // Calculate weekend dates if in weekend mode
+    let searchStartDate = startDate;
+    let searchEndDate = endDate;
+
+    if (isWeekendTripType(tripType)) {
+      const { startDate: start, endDate: end } = generateWeekendDates(
+        weekendCount,
+        tripType === "longWeekend",
+      );
+      searchStartDate = format(start, "yyyy-MM-dd");
+      searchEndDate = format(end, "yyyy-MM-dd");
+    }
+
     const newSearchParams: SearchParams = {
       tripType,
-      startDate,
-      endDate,
+      startDate: searchStartDate,
+      endDate: searchEndDate,
       maxPrice,
-      minDays: tripType === "oneWay" ? 0 : minDays,
-      maxDays: tripType === "oneWay" ? 0 : maxDays,
+      minDays: isWeekendTripType(tripType)
+        ? 1
+        : tripType === "oneWay"
+          ? 0
+          : minDays,
+      maxDays:
+        tripType === "weekend"
+          ? 2
+          : tripType === "longWeekend"
+            ? 3
+            : tripType === "oneWay"
+              ? 0
+              : maxDays,
       originAirports: selectedOrigins,
       wantedCountries: selectedCountries,
       adults,
@@ -301,16 +483,18 @@ export default function FlightSearch() {
       return;
     }
 
-    if (!startDate) {
-      setError("Please select a departure date");
-      setLoading(false);
-      return;
-    }
+    if (tripType !== "weekend" && tripType !== "longWeekend") {
+      if (!startDate) {
+        setError("Please select a departure date");
+        setLoading(false);
+        return;
+      }
 
-    if (tripType === "return" && !endDate) {
-      setError("Please select a return date");
-      setLoading(false);
-      return;
+      if (tripType === "return" && !endDate) {
+        setError("Please select a return date");
+        setLoading(false);
+        return;
+      }
     }
 
     setSearchParams(newSearchParams);
@@ -320,6 +504,9 @@ export default function FlightSearch() {
         ...newSearchParams,
         originAirports: newSearchParams.originAirports.join(","),
         wantedCountries: newSearchParams.wantedCountries.join(","),
+        ...(tripType === "weekend" && {
+          weekendCount: weekendCount,
+        }),
       };
 
       const apiUrl = "https://flymebaby-python.onrender.com";
@@ -327,10 +514,7 @@ export default function FlightSearch() {
       const searchUrl = `${apiUrl}/api/search-flights?${new URLSearchParams(
         searchParamsForUrl as any,
       )}`;
-      //console.log(
-      //  "Raw API request:",
-      //  JSON.stringify({ url: searchUrl, path: new URL(searchUrl).pathname }),
-      //);
+      //console.log("Raw API request:", { url: searchUrl });
       const { eventSource, cleanup } = createEventSourceWithCleanup(searchUrl);
       cleanupRef.current = cleanup;
 
@@ -350,7 +534,7 @@ export default function FlightSearch() {
       };
 
       eventSource.onmessage = (event) => {
-        console.log("Raw API response:", event.data);
+        //console.log("Raw API response:", event.data);
         setTimeout(() => {
           submitResultsFold.current?.scrollIntoView({
             behavior: "smooth",
@@ -362,9 +546,13 @@ export default function FlightSearch() {
           cleanup();
           setLoading(false);
 
-          // Check if we have any flights that meet the date criteria
+          // Check if we have any valid flights
           setFlights((currentFlights) => {
-            const validFlights = currentFlights.filter(isFlightWithinDateRange);
+            const validFlights = currentFlights.filter((flight) =>
+              isWeekendTripType(tripType)
+                ? isValidWeekendFlight(flight, tripType === "longWeekend")
+                : isFlightWithinDateRange(flight),
+            );
             if (validFlights.length === 0) {
               setNoFlightsFound(true);
             }
@@ -383,9 +571,13 @@ export default function FlightSearch() {
             return;
           }
 
-          // Only add flights that meet the date criteria
+          // Only add flights that meet the criteria
           const flight = data as Flight;
-          if (isFlightWithinDateRange(flight)) {
+          if (
+            isWeekendTripType(tripType)
+              ? isValidWeekendFlight(flight, tripType === "longWeekend")
+              : isFlightWithinDateRange(flight)
+          ) {
             setFlights((prevFlights) => {
               const newFlights = [...prevFlights, flight];
               return newFlights.sort((a, b) => a.totalPrice - b.totalPrice);
@@ -429,9 +621,12 @@ export default function FlightSearch() {
     selectedCountries,
   ]);
 
+  // Manages modal visibility state
+  // Ensures only one modal is open at a time
   const toggleModal = (modalName: keyof ModalState) => {
     setActiveModal((prev) => ({
       tripType: false,
+      weekendMode: false,
       passengers: false,
       locations: false,
       dates: false,
@@ -441,6 +636,7 @@ export default function FlightSearch() {
     }));
   };
 
+  // Passenger management functions
   const handleAddPassenger = (type: PassengerType["type"]) => {
     setPassengers((prev) => [...prev, { type, count: 1 }]);
 
@@ -457,6 +653,7 @@ export default function FlightSearch() {
     }
   };
 
+  // Handles removing a specific passenger type and resets its count
   const handleRemovePassenger = (typeToRemove: PassengerType["type"]) => {
     setPassengers((prev) => prev.filter((p) => p.type !== typeToRemove));
 
@@ -473,6 +670,8 @@ export default function FlightSearch() {
     }
   };
 
+  // Updates the count for a specific passenger type
+  // Syncs the count between passengers array and individual state variables
   const handleUpdatePassengerCount = (
     type: PassengerType["type"],
     count: number,
@@ -507,9 +706,9 @@ export default function FlightSearch() {
         <input type="hidden" name="children" value={children} />
 
         <div className="items-left flex flex-col gap-4 text-base leading-relaxed sm:items-center sm:gap-6 sm:text-lg">
-          <div
-            className="flex flex-wrap items-center gap-2"
-            role="group"
+          <PopMotion
+            key="mode-section"
+            className="flex flex-wrap items-center gap-x-2 gap-y-4"
             aria-label="trip-type-group"
           >
             <span id="trip-type-group">I'm looking for a</span>
@@ -517,20 +716,34 @@ export default function FlightSearch() {
               options={[
                 { value: "return", label: "return" },
                 { value: "oneWay", label: "one way" },
+                { value: "weekend", label: "weekend" },
+                { value: "longWeekend", label: "long weekend" },
               ]}
               currentValue={tripType}
-              onChange={(value) =>
-                updateFormForTripType(value as "oneWay" | "return")
-              }
+              onChange={(value) => updateFormForTripType(value as TripType)}
               aria-label="Select trip type"
             />
             <span>flight</span>
-          </div>
+            {(tripType === "weekend" || tripType === "longWeekend") && (
+              <div className="flex items-center gap-2">
+                <span>in the next</span>
+                <NumberModal
+                  value={weekendCount}
+                  onChange={setWeekendCount}
+                  singular="weekend"
+                  plural="weekends"
+                  min={1}
+                  max={6}
+                  aria-label="Number of weekends to search"
+                />
+              </div>
+            )}
+          </PopMotion>
 
-          <motion.div
+          <PopMotion
+            key="pasenger-section"
             layout="position"
             className="layout-animation flex flex-wrap items-center justify-end gap-x-1 gap-y-4 xsm:gap-x-2"
-            role="group"
           >
             <span className="mr-1 xsm:mr-0">for</span>
             <NumberModal
@@ -542,8 +755,8 @@ export default function FlightSearch() {
               max={20}
             />
             {passengers.map((passenger, index) => (
-              <PopMotion
-                key={passenger.type}
+              <div
+                key={`${passenger.type}-${index}`}
                 className="flex items-center gap-2"
               >
                 {index === 0 && (
@@ -565,7 +778,7 @@ export default function FlightSearch() {
                   max={20}
                   onRemove={() => handleRemovePassenger(passenger.type)}
                 />
-              </PopMotion>
+              </div>
             ))}
             <BubbleModal
               onAddPassenger={handleAddPassenger}
@@ -573,7 +786,7 @@ export default function FlightSearch() {
               aria-label="Add passenger type"
               buttonAriaLabel="Add additional passenger type"
             />
-          </motion.div>
+          </PopMotion>
 
           <PopMotion
             key="locations-section"
@@ -589,7 +802,7 @@ export default function FlightSearch() {
                   placeholder="Select airports..."
                   searchPlaceholder="Search airports..."
                   showCode={true}
-                  className="min-w-[11.5rem]"
+                  className="min-w-[11.2rem]"
                   ariaLabel="Open departure airports selection"
                 />
               </span>
@@ -615,14 +828,16 @@ export default function FlightSearch() {
             </div>
           </PopMotion>
 
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <DatePickerWithRange
-              dateRange={dateRange}
-              onDateRangeChange={setDateRange}
-              className="w-auto"
-              aria-label="Pick a date range"
-            />
-          </div>
+          {tripType !== "weekend" && tripType !== "longWeekend" && (
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <DatePickerWithRange
+                dateRange={dateRange}
+                onDateRangeChange={setDateRange}
+                className="w-auto"
+                aria-label="Pick a date range"
+              />
+            </div>
+          )}
 
           {tripType === "return" && (
             <PopMotion
@@ -685,7 +900,7 @@ export default function FlightSearch() {
               loading ? "Searching for flights" : "Search for flights"
             }
           >
-            {loading ? "Searching..." : "Find Flights"}
+            {loading ? "Searching..." : "Gimme Flights"}
           </button>
         </PopMotion>
       </form>

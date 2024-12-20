@@ -28,22 +28,35 @@ export function generateRyanairLink(
   teens: number,
   children: number,
   infants: number,
-  tripType: "oneWay" | "return" = "return",
+  tripType: "oneWay" | "return" | "weekend" | "longWeekend",
 ): string {
-  const outbound = flight.outbound;
-  const inbound = flight.inbound;
+  const isReturn =
+    tripType === "return" ||
+    tripType === "weekend" ||
+    tripType === "longWeekend";
 
-  const outDate = outbound.departureTime.split("T")[0];
-  const isReturn = tripType === "return";
+  const baseUrl = "https://www.ryanair.com/gb/en/trip/flights/select";
+  const params = new URLSearchParams({
+    adults: adults.toString(),
+    teens: teens.toString(),
+    children: children.toString(),
+    infants: infants.toString(),
+    dateOut: formatDateForRyanair(flight.outbound.departureTime),
+    originIata: flight.outbound.origin,
+    destinationIata: flight.outbound.destination,
+    isReturn: isReturn.toString(),
+  });
 
-  let url = `https://www.ryanair.com/en/en/trip/flights/select?adults=${adults}&teens=${teens}&children=${children}&infants=${infants}&dateOut=${outDate}&isConnectedFlight=false&discount=0&promoCode=&isReturn=${isReturn}&originIata=${outbound.origin}&destinationIata=${outbound.destination}&tpAdults=${adults}&tpTeens=${teens}&tpChildren=${children}&tpInfants=${infants}&tpStartDate=${outDate}&tpDiscount=0&tpPromoCode=&tpOriginIata=${outbound.origin}&tpDestinationIata=${outbound.destination}`;
-
-  if (isReturn && inbound) {
-    const inDate = inbound.departureTime.split("T")[0];
-    url += `&dateIn=${inDate}&tpEndDate=${inDate}`;
+  if (isReturn && flight.inbound) {
+    params.append("dateIn", formatDateForRyanair(flight.inbound.departureTime));
   }
 
-  return url;
+  return `${baseUrl}?${params.toString()}`;
+}
+
+function formatDateForRyanair(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toISOString().split("T")[0];
 }
 
 export function calculateTripDays(
