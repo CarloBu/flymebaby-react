@@ -50,6 +50,11 @@ The application is built using Astro as the meta-framework with React components
 
 The frontend communicates with a custom Python backend endpoint:
 
+### Wrangler Worker
+
+Also I deployed a wrangler worker to prevent the free Render server from sleeping. The worker is configured using `wrangler.toml` and performs periodic health checks on the backend.
+
+
 ### Backend (Python Flask)
 
 The backend is built with Flask and provides a real-time flight search API using Server-Sent Events (SSE). The backend repository is available at [flymebaby-python](https://github.com/CarloBu/flymebaby-python).
