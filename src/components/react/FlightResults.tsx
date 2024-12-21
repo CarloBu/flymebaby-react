@@ -1064,7 +1064,7 @@ export function FlightResults({
 
                 {/* Mini City Cards - Show when collapsed */}
                 {!openCountries[country] && (
-                  <div className="mini-cards grid grid-cols-1 gap-2 xsm:gap-4 ssm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                  <div className="mini-cards grid grid-cols-1 gap-2 xsm:gap-4 ssm:grid-cols-2 md:grid-cols-3">
                     {Object.entries(countryData.cities)
                       .sort(([, cityDataA], [, cityDataB]) => {
                         const cityMinPriceA = Math.min(
