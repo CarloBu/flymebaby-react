@@ -701,10 +701,6 @@ export default function FlightSearch() {
         role="search"
         aria-label="Flight search form"
       >
-        <input type="hidden" name="tripType" value={tripType} />
-        <input type="hidden" name="adults" value={adults} />
-        <input type="hidden" name="children" value={children} />
-
         <div className="items-left flex flex-col gap-4 text-base leading-relaxed sm:items-center sm:gap-6 sm:text-lg">
           <PopMotion
             key="mode-section"
@@ -804,6 +800,7 @@ export default function FlightSearch() {
                   showCode={true}
                   className="min-w-[11.2rem]"
                   ariaLabel="Open departure airports selection"
+                  mobileBreakpoint={360}
                 />
               </span>
             </div>
@@ -823,6 +820,7 @@ export default function FlightSearch() {
                   allOptionText="All Countries"
                   className="min-w-[12rem]"
                   ariaLabel="Open destination countries selection"
+                  mobileBreakpoint={423}
                 />
               </span>
             </div>

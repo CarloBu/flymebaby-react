@@ -81,9 +81,9 @@ The main endpoint `/api/search-flights` accepts the following parameters:
 - `originAirports`: Comma-separated airport codes
 - `wantedCountries`: Comma-separated country names
 - `adults`: Number of adult passengers
+- `teens`: Number of teen passengers 
 - `children`: Number of child passengers
-- `infants`: Number of infant passengers
-- `teens`: Number of teen passengers
+- `infants`: Number of infant passengers (because ryanair has 25eur flat infant seat fee, the api ignores infants)
 
 #### Response Format
 

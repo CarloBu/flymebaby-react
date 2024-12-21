@@ -1,6 +1,7 @@
 import type { Flight } from "../types/flight";
 
 export const INFANT_SEAT_PRICE = 25; // EUR per one-way flight
+export const RESERVED_SEAT_FEE = 8; // EUR per flight when there are children
 
 export function formatDateTime(dateString: string, short: boolean = false) {
   const date = new Date(dateString);
@@ -203,10 +204,20 @@ export function calculateTotalPrice(
   teens: number,
   children: number,
   infants: number,
-  tripType: "oneWay" | "return" = "return",
+  tripType: "oneWay" | "return" | "weekend" | "longWeekend" = "return",
 ): number {
+  const isReturn =
+    tripType === "return" ||
+    tripType === "weekend" ||
+    tripType === "longWeekend";
+
   const infantFee =
     INFANT_SEAT_PRICE * infants * (tripType === "return" ? 2 : 1);
-  const passengerPrice = basePrice * (adults + teens + children);
-  return passengerPrice + infantFee;
+
+  // Add reserved seat fee when there are children
+  // One reserved seat fee per flight when there are children, regardless of the number of children
+  const reservedSeatFee =
+    children > 0 ? RESERVED_SEAT_FEE * (isReturn ? 2 : 1) : 0;
+
+  return basePrice + infantFee + reservedSeatFee;
 }

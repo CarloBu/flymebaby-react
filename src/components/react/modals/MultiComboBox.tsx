@@ -44,7 +44,8 @@ interface MultiComboboxProps {
   allOptionText?: string;
   showCode?: boolean;
   displayFormat?: (option: Option) => string;
-  ariaLabel: string;
+  ariaLabel?: string;
+  mobileBreakpoint?: number;
 }
 
 export function MultiCombobox({
@@ -60,6 +61,7 @@ export function MultiCombobox({
   showCode = false,
   displayFormat,
   ariaLabel,
+  mobileBreakpoint = 419,
 }: MultiComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -85,16 +87,6 @@ export function MultiCombobox({
       const searchCountry =
         option.country?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         option.countryCode?.toLowerCase().includes(searchQuery.toLowerCase());
-
-      if (
-        searchQuery.toLowerCase() === "sweden" ||
-        searchQuery.toLowerCase() === "se"
-      ) {
-        return (
-          option.country?.toLowerCase() === "sweden" ||
-          option.countryCode?.toLowerCase() === "se"
-        );
-      }
 
       return (
         option.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -188,7 +180,7 @@ export function MultiCombobox({
   };
 
   const renderSelectedValues = () => {
-    const MAX_VISIBLE_ITEMS = windowWidth > 419 ? 2 : 1;
+    const MAX_VISIBLE_ITEMS = windowWidth > mobileBreakpoint ? 2 : 1;
 
     if (selectedValues.length === 0) {
       return (

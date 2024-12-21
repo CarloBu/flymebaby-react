@@ -5,6 +5,8 @@ import {
   calculateTripDays,
   getPriceColor,
   INFANT_SEAT_PRICE,
+  RESERVED_SEAT_FEE,
+  calculateTotalPrice,
 } from "../../utils/flightUtils";
 import { useState, useEffect } from "react";
 import { Frown } from "lucide-react";
@@ -25,9 +27,41 @@ export function LoadingIndicator() {
   return (
     <div className="mx-auto flex max-w-3xl select-none flex-col items-center justify-center rounded-3xl border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
       <div className="mb-6 flex items-center justify-center">
-        <div className="relative h-16 w-16">
-          <div className="absolute inset-0 animate-[spin_2s_linear_infinite] rounded-full border-[3px] border-gray-200 dark:border-gray-700" />
-          <div className="absolute inset-0 animate-[spin_1.5s_linear_infinite] rounded-full border-[3px] border-transparent border-t-orange-500 dark:border-t-orange-400" />
+        <div className="relative h-24 w-24">
+          {/* Background ring */}
+          <svg
+            className="absolute inset-0 h-full w-full"
+            viewBox="0 0 120 120"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="60"
+              cy="60"
+              r="50"
+              fill="none"
+              stroke="rgb(243 244 246)"
+              strokeWidth="12"
+              className="dark:stroke-gray-700"
+            />
+          </svg>
+          {/* Spinning orange ring */}
+          <svg
+            className="absolute inset-0 h-full w-full animate-[spin_1.5s_linear_infinite]"
+            viewBox="0 0 120 120"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="60"
+              cy="60"
+              r="50"
+              fill="none"
+              stroke="rgb(249 115 22)"
+              strokeWidth="20"
+              strokeLinecap="round"
+              strokeDasharray="85 215"
+              className="dark:stroke-orange-400"
+            />
+          </svg>
         </div>
       </div>
       <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -49,6 +83,10 @@ function MiniFlightCard({
   onClick,
   onFlightClick,
   tripType = "return",
+  adults,
+  teens,
+  children,
+  infants,
 }: {
   flight: Flight;
   minPrice: number;
@@ -56,6 +94,10 @@ function MiniFlightCard({
   onClick?: () => void;
   onFlightClick?: (flightId: string) => void;
   tripType?: "oneWay" | "return" | "weekend" | "longWeekend";
+  adults: number;
+  teens: number;
+  children: number;
+  infants: number;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const flightId = `${flight.outbound.origin}-${flight.outbound.destination}-${flight.outbound.departureTime}`;
@@ -68,6 +110,15 @@ function MiniFlightCard({
           flight.inbound.departureTime,
         )
       : undefined;
+
+  const totalPrice = calculateTotalPrice(
+    flight.totalPrice,
+    adults,
+    teens,
+    children,
+    infants,
+    tripType,
+  );
 
   const handleClick = () => {
     onClick?.();
@@ -84,7 +135,7 @@ function MiniFlightCard({
     }, 100);
   };
 
-  const priceColor = getPriceColor(flight.totalPrice, minPrice, maxPrice);
+  const priceColor = getPriceColor(totalPrice, minPrice, maxPrice);
 
   const showReturnInfo =
     tripType === "return" ||
@@ -155,7 +206,7 @@ function MiniFlightCard({
             className="text-[clamp(0.7rem,4vw,1rem)] font-bold xsm:text-[1.1rem]"
             style={{ color: priceColor.text }}
           >
-            €{Math.round(flight.totalPrice)}
+            €{Math.round(totalPrice)}
           </span>
         </div>
       </div>
@@ -171,15 +222,37 @@ function MiniCityCard({
   onCardClick,
   minPrice,
   maxPrice,
+  adults,
+  teens,
+  children,
+  infants,
+  tripType = "return",
 }: {
   city: string;
   cityData: CityData;
   onCardClick: () => void;
   minPrice: number;
   maxPrice: number;
+  adults: number;
+  teens: number;
+  children: number;
+  infants: number;
+  tripType?: "oneWay" | "return" | "weekend" | "longWeekend";
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  const priceColor = getPriceColor(cityData.minPrice, minPrice, maxPrice);
+  const cityMinPrice = Math.min(
+    ...cityData.flights.map((flight) =>
+      calculateTotalPrice(
+        flight.totalPrice,
+        adults,
+        teens,
+        children,
+        infants,
+        tripType,
+      ),
+    ),
+  );
+  const priceColor = getPriceColor(cityMinPrice, minPrice, maxPrice);
 
   return (
     <div className="relative aspect-[200/80] w-full">
@@ -223,7 +296,7 @@ function MiniCityCard({
             className="text-[6vw] font-bold ssm:text-[1.1rem]"
             style={{ color: priceColor.text }}
           >
-            €{Math.round(cityData.minPrice)}
+            €{Math.round(cityMinPrice)}
           </span>
         </div>
       </div>
@@ -302,10 +375,19 @@ function DetailedFlightCard({
   tripType?: "oneWay" | "return" | "weekend" | "longWeekend";
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  const priceColor = getPriceColor(flight.totalPrice, minPrice, maxPrice);
+  const totalPrice = calculateTotalPrice(
+    flight.totalPrice,
+    adults,
+    teens,
+    children,
+    infants,
+    tripType,
+  );
+  const priceColor = getPriceColor(totalPrice, minPrice, maxPrice);
   const flightId = `${flight.outbound.origin}-${flight.outbound.destination}-${flight.outbound.departureTime}`;
-  const infantFee =
-    INFANT_SEAT_PRICE * infants * (tripType === "oneWay" ? 1 : 2);
+  const isReturn = tripType !== "oneWay";
+  const infantFee = INFANT_SEAT_PRICE * (isReturn ? 2 : 1);
+  const reservedSeatFee = RESERVED_SEAT_FEE * (isReturn ? 2 : 1);
 
   const showReturnInfo =
     tripType === "return" ||
@@ -430,19 +512,29 @@ function DetailedFlightCard({
               className="text-2xl font-bold md:text-3xl"
               style={{ color: priceColor.text }}
             >
-              €{Math.round(flight.totalPrice)}
+              €{Math.round(totalPrice)}
             </div>
             <div className="mt-1 space-y-1">
               <div className="text-xs text-gray-500 dark:text-gray-900 md:text-sm">
-                {adults > 0 && `${adults} adult${adults !== 1 ? "s" : ""}`}
-                {teens > 0 && ` • ${teens} teen${teens !== 1 ? "s" : ""}`}
-                {children > 0 &&
-                  ` • ${children} ${children === 1 ? "child" : "children"}`}
+                {[
+                  adults > 0 && `${adults} adult${adults !== 1 ? "s" : ""}`,
+                  teens > 0 && `${teens} teen${teens !== 1 ? "s" : ""}`,
+                  children > 0 &&
+                    `${children} ${children === 1 ? "child" : "children"}`,
+                  infants > 0 && `${infants} infant${infants !== 1 ? "s" : ""}`,
+                ]
+                  .filter(Boolean)
+                  .join(" • ")}
               </div>
-              {infants > 0 && (
-                <div className="text-xs text-gray-500 dark:text-gray-900 md:text-sm">
-                  {infants} infant{infants !== 1 ? "s" : ""} (
-                  {tripType === "return" ? "2×" : ""}€25 seat fee)
+              {(infants > 0 || children > 0) && (
+                <div className="text-xs font-normal text-gray-500 dark:text-gray-900">
+                  {[
+                    children > 0 && `Reserved seat €${reservedSeatFee} fee`,
+                    infants > 0 && `infant seat €${infantFee} fee`,
+                  ]
+                    .filter(Boolean)
+                    .join(" and ")}{" "}
+                  {children > 0 && infants > 0 ? "are" : "is"} included
                 </div>
               )}
             </div>
@@ -460,7 +552,7 @@ function DetailedFlightCard({
             target="_blank"
             rel="noopener noreferrer"
             className="button-animation-subtle group/flight-button relative mt-4 inline-flex w-full items-center justify-center overflow-hidden rounded-full bg-black px-3 py-2 text-sm font-semibold text-white transition-all hover:bg-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800 md:px-4 md:py-2.5"
-            aria-label={`Book flight from ${flight.outbound.origin} to ${flight.outbound.destination} for €${Math.round(flight.totalPrice)}`}
+            aria-label={`Book flight from ${flight.outbound.origin} to ${flight.outbound.destination} for €${Math.round(totalPrice)}`}
           >
             <span className="flex items-center">
               Book Flight
@@ -566,7 +658,25 @@ function CityGroup({
       {!isExpanded && (
         <div className="mini-cards mt-3 grid grid-cols-2 gap-2 ssm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
           {cityData.flights
-            .sort((a, b) => a.totalPrice - b.totalPrice)
+            .sort((a, b) => {
+              const totalPriceA = calculateTotalPrice(
+                a.totalPrice,
+                adults,
+                teens,
+                children,
+                infants,
+                tripType,
+              );
+              const totalPriceB = calculateTotalPrice(
+                b.totalPrice,
+                adults,
+                teens,
+                children,
+                infants,
+                tripType,
+              );
+              return totalPriceA - totalPriceB;
+            })
             .map((flight, index) => (
               <div
                 key={`mini-${flight.outbound.origin}-${flight.outbound.destination}-${index}`}
@@ -581,6 +691,10 @@ function CityGroup({
                     handleFlightClick(flightId);
                   }}
                   tripType={tripType}
+                  adults={adults}
+                  teens={teens}
+                  children={children}
+                  infants={infants}
                 />
               </div>
             ))}
@@ -591,7 +705,25 @@ function CityGroup({
       {isExpanded && (
         <div className="detailed-cards space-y-3 ssm:space-y-5">
           {cityData.flights
-            .sort((a, b) => a.totalPrice - b.totalPrice)
+            .sort((a, b) => {
+              const totalPriceA = calculateTotalPrice(
+                a.totalPrice,
+                adults,
+                teens,
+                children,
+                infants,
+                tripType,
+              );
+              const totalPriceB = calculateTotalPrice(
+                b.totalPrice,
+                adults,
+                teens,
+                children,
+                infants,
+                tripType,
+              );
+              return totalPriceA - totalPriceB;
+            })
             .map((flight, index) => {
               const tripDays = calculateTripDays(
                 flight.outbound.departureTime,
@@ -707,8 +839,30 @@ export function FlightResults({
   );
 
   // Calculate global price range from filtered flights
-  const globalMinPrice = Math.min(...validFlights.map((f) => f.totalPrice));
-  const globalMaxPrice = Math.max(...validFlights.map((f) => f.totalPrice));
+  const globalMinPrice = Math.min(
+    ...validFlights.map((flight) =>
+      calculateTotalPrice(
+        flight.totalPrice,
+        adults,
+        teens,
+        children,
+        infants,
+        searchParams?.tripType || "return",
+      ),
+    ),
+  );
+  const globalMaxPrice = Math.max(
+    ...validFlights.map((flight) =>
+      calculateTotalPrice(
+        flight.totalPrice,
+        adults,
+        teens,
+        children,
+        infants,
+        searchParams?.tripType || "return",
+      ),
+    ),
+  );
 
   // Group flights by country and city for hierarchical display
   const groupedFlights = validFlights.reduce(
@@ -913,7 +1067,31 @@ export function FlightResults({
                   <div className="mini-cards grid grid-cols-1 gap-2 xsm:gap-4 ssm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     {Object.entries(countryData.cities)
                       .sort(([, cityDataA], [, cityDataB]) => {
-                        return cityDataA.minPrice - cityDataB.minPrice;
+                        const cityMinPriceA = Math.min(
+                          ...cityDataA.flights.map((flight) =>
+                            calculateTotalPrice(
+                              flight.totalPrice,
+                              adults,
+                              teens,
+                              children,
+                              infants,
+                              searchParams?.tripType || "return",
+                            ),
+                          ),
+                        );
+                        const cityMinPriceB = Math.min(
+                          ...cityDataB.flights.map((flight) =>
+                            calculateTotalPrice(
+                              flight.totalPrice,
+                              adults,
+                              teens,
+                              children,
+                              infants,
+                              searchParams?.tripType || "return",
+                            ),
+                          ),
+                        );
+                        return cityMinPriceA - cityMinPriceB;
                       })
                       .map(([city, cityData]) => (
                         <div key={`mini-${city}`} className="w-full">
@@ -925,6 +1103,11 @@ export function FlightResults({
                             }
                             minPrice={globalMinPrice}
                             maxPrice={globalMaxPrice}
+                            adults={adults}
+                            teens={teens}
+                            children={children}
+                            infants={infants}
+                            tripType={searchParams?.tripType || "return"}
                           />
                         </div>
                       ))}
@@ -966,6 +1149,12 @@ export function FlightResults({
             </div>
           );
         })}
+
+      {/* Price change disclaimer */}
+      <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+        Please note that prices may change due to availability at time of
+        booking.
+      </div>
     </div>
   );
 }
