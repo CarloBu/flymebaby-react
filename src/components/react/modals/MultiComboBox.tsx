@@ -355,6 +355,26 @@ export function MultiCombobox({
                 </CommandItem>
               )}
 
+              {/* Selected Items */}
+              {filterOptions
+                .filter((opt) => selectedValues.includes(opt.code))
+                .map((option) => (
+                  <CommandItem
+                    key={option.code}
+                    value={`${option.name} ${option.code} ${option.country || ""}`}
+                    onSelect={() => handleSelection(option.code)}
+                    className="flex w-full items-center justify-between rounded-full px-4 py-3 text-left text-base text-gray-900 transition-all data-[selected=true]:bg-selected-color dark:text-white dark:hover:bg-gray-700 dark:data-[selected=true]:bg-gray-700"
+                  >
+                    <div className="flex-1">
+                      <span className="flex items-center gap-1 font-medium">
+                        {getDisplayText(option)}
+                      </span>
+                    </div>
+                    <CheckIcon className="-ml-10 flex-shrink-0 text-gray-800 dark:text-white" />
+                  </CommandItem>
+                ))}
+
+              {/* City Groups */}
               {groupedOptions.map((group) => (
                 <React.Fragment key={group.city}>
                   <CommandItem
@@ -369,36 +389,33 @@ export function MultiCombobox({
                       <CheckIcon className="text-gray-800 dark:text-white" />
                     )}
                   </CommandItem>
-                  {group.airports.map((airport) => (
-                    <CommandItem
-                      key={airport.code}
-                      value={`${airport.name} ${airport.code} ${airport.country || ""}`}
-                      onSelect={() => handleSelection(airport.code)}
-                      className="relative ml-4 flex w-[calc(100%-1rem)] items-center justify-between rounded-full px-4 py-3 text-left text-base text-gray-900 transition-all data-[selected=true]:bg-selected-color dark:text-white dark:hover:bg-gray-700 dark:data-[selected=true]:bg-gray-700"
-                    >
-                      <div className="flex-1">
-                        <span
-                          className={cn(
-                            "flex items-center gap-1",
-                            selectedValues.includes(airport.code)
-                              ? "font-medium"
-                              : "",
-                          )}
-                        >
-                          {getDisplayText(airport)}
-                        </span>
-                      </div>
-                      {selectedValues.includes(airport.code) && (
-                        <CheckIcon className="-ml-10 flex-shrink-0 text-gray-800 dark:text-white" />
-                      )}
-                    </CommandItem>
-                  ))}
+                  {group.airports
+                    .filter((airport) => !selectedValues.includes(airport.code))
+                    .map((airport) => (
+                      <CommandItem
+                        key={airport.code}
+                        value={`${airport.name} ${airport.code} ${airport.country || ""}`}
+                        onSelect={() => handleSelection(airport.code)}
+                        className="relative ml-4 flex w-[calc(100%-1rem)] items-center justify-between rounded-full px-4 py-3 text-left text-base text-gray-900 transition-all data-[selected=true]:bg-selected-color dark:text-white dark:hover:bg-gray-700 dark:data-[selected=true]:bg-gray-700"
+                      >
+                        <div className="flex-1">
+                          <span className="flex items-center gap-1">
+                            {getDisplayText(airport)}
+                          </span>
+                        </div>
+                        {selectedValues.includes(airport.code) && (
+                          <CheckIcon className="-ml-10 flex-shrink-0 text-gray-800 dark:text-white" />
+                        )}
+                      </CommandItem>
+                    ))}
                 </React.Fragment>
               ))}
 
+              {/* Remaining Items */}
               {filterOptions
                 .filter(
                   (opt) =>
+                    !selectedValues.includes(opt.code) &&
                     !groupedOptions.some((group) =>
                       group.airports.some(
                         (airport) => airport.code === opt.code,
@@ -413,14 +430,7 @@ export function MultiCombobox({
                     className="flex w-full items-center justify-between rounded-full px-4 py-3 text-left text-base text-gray-900 transition-all data-[selected=true]:bg-selected-color dark:text-white dark:hover:bg-gray-700 dark:data-[selected=true]:bg-gray-700"
                   >
                     <div className="flex-1">
-                      <span
-                        className={cn(
-                          "flex items-center gap-1",
-                          selectedValues.includes(option.code)
-                            ? "font-medium"
-                            : "",
-                        )}
-                      >
+                      <span className="flex items-center gap-1">
                         {getDisplayText(option)}
                       </span>
                     </div>

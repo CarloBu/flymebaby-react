@@ -209,18 +209,18 @@ function MiniCityCard({
         className="absolute left-0 top-0 flex h-full w-full cursor-pointer flex-col justify-between px-6 py-3"
       >
         <div
-          className="ssm:text-base truncate text-[5vw] font-medium text-gray-800 dark:text-gray-800"
+          className="truncate text-[5vw] font-medium text-gray-800 dark:text-gray-800 ssm:text-base"
           title={city}
         >
           {city}
         </div>
         <div className="flex items-center justify-between gap-2">
-          <span className="ssm:text-xs text-[4vw] text-gray-600 dark:text-gray-700">
+          <span className="text-[4vw] text-gray-600 dark:text-gray-700 ssm:text-xs">
             {cityData.flights.length} flight
             {cityData.flights.length !== 1 ? "s" : ""}
           </span>
           <span
-            className="ssm:text-[1.1rem] text-[6vw] font-bold"
+            className="text-[6vw] font-bold ssm:text-[1.1rem]"
             style={{ color: priceColor.text }}
           >
             €{Math.round(cityData.minPrice)}
@@ -317,7 +317,7 @@ function DetailedFlightCard({
       id={`flight-${flightId}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group relative mx-0 my-4 rounded-3xl transition-all duration-200 sm:mx-2 md:mx-8 md:my-8 ${
+      className={`group relative mt-3 rounded-3xl transition-all duration-200 ${
         isHighlighted ? "ring-2 ring-gray-500 dark:ring-gray-200" : ""
       }`}
     >
@@ -533,17 +533,17 @@ function CityGroup({
   return (
     <div
       id={`city-group-${city.toLowerCase().replace(/\s+/g, "-")}`}
-      className={`mb-2 rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 xsm:p-2 md:mb-4 md:p-6 ${
+      className={`rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 xsm:p-4 sm:p-6 ${
         isHighlighted
           ? "ring-2 ring-gray-500 dark:ring-gray-200"
           : "border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500"
       }`}
     >
       <div
-        className="mb-3 cursor-pointer px-2 text-xl font-semibold text-gray-700 transition-colors hover:text-black dark:text-gray-200 dark:hover:text-gray-400 sm:px-0"
+        className="cursor-pointer text-xl font-semibold text-gray-700 transition-colors hover:text-black dark:text-gray-200 dark:hover:text-gray-400"
         onClick={handleToggle}
       >
-        <div className="mr-1 mt-4 flex select-none items-start justify-between gap-2 sm:mt-1">
+        <div className="ml-0 flex select-none items-start justify-between gap-2 px-2 pt-2 sm:ml-1 sm:px-1 sm:pt-1">
           <div className="flex items-baseline gap-2">
             {city}
             <span className="whitespace-nowrap text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -564,13 +564,13 @@ function CityGroup({
 
       {/* Mini Cards - Show when collapsed */}
       {!isExpanded && (
-        <div className="mini-cards mb-1 grid grid-cols-2 gap-2 px-1 xsm:flex xsm:flex-wrap xsm:gap-4">
+        <div className="mini-cards mt-3 grid grid-cols-2 gap-2 ssm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
           {cityData.flights
             .sort((a, b) => a.totalPrice - b.totalPrice)
             .map((flight, index) => (
               <div
                 key={`mini-${flight.outbound.origin}-${flight.outbound.destination}-${index}`}
-                className="w-full xsm:w-auto xsm:min-w-[9.8rem] xsm:max-w-44"
+                className="w-full"
               >
                 <MiniFlightCard
                   flight={flight}
@@ -589,7 +589,7 @@ function CityGroup({
 
       {/* Detailed Cards - Show when expanded */}
       {isExpanded && (
-        <div className="detailed-cards">
+        <div className="detailed-cards space-y-3 ssm:space-y-5">
           {cityData.flights
             .sort((a, b) => a.totalPrice - b.totalPrice)
             .map((flight, index) => {
@@ -879,18 +879,18 @@ export function FlightResults({
             <div
               key={country}
               id={`country-group-${country.toLowerCase().replace(/\s+/g, "-")}`}
-              className={`my-4 w-full rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 xsm:p-2 sm:p-6 ${
+              className={`w-full rounded-3xl border bg-white p-3 transition-all dark:bg-gray-900 xsm:p-4 sm:p-6 ${
                 scrollState.highlightedCountry === country
                   ? "border-gray-300 dark:border-gray-400"
                   : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
               }`}
             >
-              <div className="mx-2">
+              <div className="country-group-header">
                 <div
-                  className="mb-4 ml-2 mt-2 cursor-pointer text-3xl font-bold text-gray-800 transition-colors hover:text-black dark:text-gray-100 dark:hover:text-gray-400 sm:mt-0"
+                  className="cursor-pointer text-3xl font-bold text-gray-800 transition-colors hover:text-black dark:text-gray-100 dark:hover:text-gray-400"
                   onClick={() => toggleCountry(country)}
                 >
-                  <div className="mr-1 flex select-none items-center justify-between gap-2 sm:-mr-1">
+                  <div className="flex select-none items-center justify-between gap-2 p-3">
                     <div className="flex items-center gap-2">
                       {country}
                       <span className="whitespace-nowrap text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -910,16 +910,13 @@ export function FlightResults({
 
                 {/* Mini City Cards - Show when collapsed */}
                 {!openCountries[country] && (
-                  <div className="mini-cards mb-3 flex flex-wrap gap-2 px-1 xsm:gap-4">
+                  <div className="mini-cards grid grid-cols-1 gap-2 xsm:gap-4 ssm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     {Object.entries(countryData.cities)
                       .sort(([, cityDataA], [, cityDataB]) => {
                         return cityDataA.minPrice - cityDataB.minPrice;
                       })
                       .map(([city, cityData]) => (
-                        <div
-                          key={`mini-${city}`}
-                          className="ssm:w-[13.28rem] w-[100%]"
-                        >
+                        <div key={`mini-${city}`} className="w-full">
                           <MiniCityCard
                             city={city}
                             cityData={cityData}

@@ -14,7 +14,7 @@ import { PriceModal } from "./modals/PriceModal";
 import { DateRange } from "react-day-picker";
 import { DatePickerWithRange } from "./modals/DatePicker";
 import { format } from "date-fns";
-import { MultiCombobox } from "@/components/react/modals/multi-combobox";
+import { MultiCombobox } from "@/components/react/modals/MultiComboBox";
 import { PopMotion } from "@/components/react/motion/PopMotion";
 import { PlaneTakeoff, PlaneLanding, CalendarFold } from "lucide-react";
 import {

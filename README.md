@@ -87,12 +87,29 @@ The main endpoint `/api/search-flights` accepts the following parameters:
 
 #### Response Format
 
-The API streams flight results in real-time using Server-Sent Events (SSE). Each event contains:
+The API streams flight results in real-time using Server-Sent Events (SSE). Each event is prefixed with "data: " and contains a JSON object with:
 
-- Flight details (outbound and inbound)
-- Airport codes and full names
-- Departure times
-- Total price for all passengers
+```json
+{
+    "outbound": {
+        "origin": "IATA code",
+        "originFull": "City, Country",
+        "destination": "IATA code",
+        "destinationFull": "City, Country",
+        "departureTime": "ISO 8601 datetime"
+    },
+    "inbound": {
+        "origin": "IATA code",
+        "originFull": "City, Country",
+        "destination": "IATA code",
+        "destinationFull": "City, Country",
+        "departureTime": "ISO 8601 datetime"
+    },
+    "totalPrice": number
+}
+```
+
+The stream ends with a "data: END" message.
 
 ## Development
 
