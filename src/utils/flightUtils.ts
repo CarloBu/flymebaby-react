@@ -85,40 +85,35 @@ export function getPriceColor(
 ): {
   text: string;
   background: string;
-  backgroundHover: string;
+  backgroundGradient: string;
+  backgroundGradientDarker: string;
+  shadowColor: string;
   borderColor: string;
   hoverBorderColor: string;
 } {
-  if (maxPrice === minPrice) {
-    return {
-      text: "rgb(21, 128, 61)",
-      background: "rgb(220, 252, 231)",
-      backgroundHover: "rgb(187, 247, 208)",
-      borderColor: "rgb(134, 239, 172)",
-      hoverBorderColor: "rgb(31, 41, 55)",
-    };
-  }
-
   const percentage = (price - minPrice) / (maxPrice - minPrice);
 
   const colors = {
     green: {
-      text: { r: 21, g: 128, b: 61 },
-      bg: { r: 220, g: 252, b: 231 },
-      bgHover: { r: 187, g: 247, b: 208 },
-      border: { r: 134, g: 239, b: 172 },
+      bg: { r: 199, g: 255, b: 165 },
+      text: { r: 70, g: 133, b: 33 },
+      bgGradient: { r: 157, g: 250, b: 100 },
+      bgShadow: { r: 115, g: 194, b: 66 },
+      border: { r: 64, g: 120, b: 31 },
     },
     yellow: {
-      text: { r: 239, g: 184, b: 98 },
-      bg: { r: 254, g: 249, b: 195 },
-      bgHover: { r: 254, g: 240, b: 138 },
-      border: { r: 250, g: 204, b: 21 },
+      bg: { r: 255, g: 243, b: 165 },
+      text: { r: 133, g: 124, b: 33 },
+      bgGradient: { r: 250, g: 234, b: 100 },
+      bgShadow: { r: 194, g: 181, b: 66 },
+      border: { r: 120, g: 112, b: 31 },
     },
     red: {
-      text: { r: 225, g: 112, b: 85 },
-      bg: { r: 254, g: 226, b: 226 },
-      bgHover: { r: 254, g: 202, b: 202 },
-      border: { r: 248, g: 113, b: 113 },
+      bg: { r: 255, g: 190, b: 190 },
+      text: { r: 133, g: 55, b: 55 },
+      bgGradient: { r: 250, g: 150, b: 150 },
+      bgShadow: { r: 194, g: 96, b: 96 },
+      border: { r: 120, g: 51, b: 51 },
     },
   };
 
@@ -128,9 +123,12 @@ export function getPriceColor(
     bgR,
     bgG,
     bgB,
-    bgHoverR,
-    bgHoverG,
-    bgHoverB,
+    bgShadowR,
+    bgShadowG,
+    bgShadowB,
+    bgGradientR,
+    bgGradientG,
+    bgGradientB,
     borderR,
     borderG,
     borderB;
@@ -147,9 +145,14 @@ export function getPriceColor(
       colors.yellow.bg,
       factor,
     );
-    [bgHoverR, bgHoverG, bgHoverB] = interpolateColors(
-      colors.green.bgHover,
-      colors.yellow.bgHover,
+    [bgShadowR, bgShadowG, bgShadowB] = interpolateColors(
+      colors.green.bgShadow,
+      colors.yellow.bgShadow,
+      factor,
+    );
+    [bgGradientR, bgGradientG, bgGradientB] = interpolateColors(
+      colors.green.bgGradient,
+      colors.yellow.bgGradient,
       factor,
     );
     [borderR, borderG, borderB] = interpolateColors(
@@ -165,9 +168,14 @@ export function getPriceColor(
       colors.red.bg,
       factor,
     );
-    [bgHoverR, bgHoverG, bgHoverB] = interpolateColors(
-      colors.yellow.bgHover,
-      colors.red.bgHover,
+    [bgShadowR, bgShadowG, bgShadowB] = interpolateColors(
+      colors.yellow.bgShadow,
+      colors.red.bgShadow,
+      factor,
+    );
+    [bgGradientR, bgGradientG, bgGradientB] = interpolateColors(
+      colors.yellow.bgGradient,
+      colors.red.bgGradient,
       factor,
     );
     [borderR, borderG, borderB] = interpolateColors(
@@ -180,7 +188,9 @@ export function getPriceColor(
   return {
     text: `rgb(${r}, ${g}, ${b})`,
     background: `rgb(${bgR}, ${bgG}, ${bgB})`,
-    backgroundHover: `rgb(${bgHoverR}, ${bgHoverG}, ${bgHoverB})`,
+    shadowColor: `rgb(${bgShadowR}, ${bgShadowG}, ${bgShadowB})`,
+    backgroundGradient: `rgb(${bgGradientR}, ${bgGradientG}, ${bgGradientB})`,
+    backgroundGradientDarker: `rgb(${bgGradientR * 0.84}, ${bgGradientG * 0.84}, ${bgGradientB * 0.84})`,
     borderColor: `rgb(${borderR}, ${borderG}, ${borderB})`,
     hoverBorderColor: "rgb(31, 41, 55)",
   };
@@ -199,7 +209,8 @@ function interpolateColors(
 }
 
 export function calculateTotalPrice(
-  basePrice: number,
+  outboundPrice: number,
+  inboundPrice: number,
   adults: number,
   teens: number,
   children: number,
@@ -211,13 +222,61 @@ export function calculateTotalPrice(
     tripType === "weekend" ||
     tripType === "longWeekend";
 
-  const infantFee =
-    INFANT_SEAT_PRICE * infants * (tripType === "return" ? 2 : 1);
+  // Calculate base price for outbound flight
+  const outboundBasePrice = outboundPrice * (adults + teens + children);
+
+  // Calculate base price for inbound flight if it's a return trip
+  const inboundBasePrice = isReturn
+    ? inboundPrice * (adults + teens + children)
+    : 0;
+
+  // Calculate infant fees (per flight)
+  const infantFee = INFANT_SEAT_PRICE * infants * (isReturn ? 2 : 1);
 
   // Add reserved seat fee when there are children
   // One reserved seat fee per flight when there are children, regardless of the number of children
   const reservedSeatFee =
     children > 0 ? RESERVED_SEAT_FEE * (isReturn ? 2 : 1) : 0;
 
-  return basePrice + infantFee + reservedSeatFee;
+  return outboundBasePrice + inboundBasePrice + infantFee + reservedSeatFee;
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const weekday = date.toLocaleDateString("en-US", {
+    weekday: "long", // 'Monday' instead of 'Mon'
+  });
+
+  // Format as DD/MM/YYYY
+  const numericDate = date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  return `${weekday}, ${numericDate}`;
+}
+
+export function formatTime(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+export function formatFlightDuration(durationInMinutes: number): string {
+  const hours = Math.floor(durationInMinutes / 60);
+  const minutes = durationInMinutes % 60;
+
+  if (hours === 0) {
+    return `${minutes}m`;
+  }
+
+  return minutes === 0 ? `${hours}h` : `${hours}h ${minutes}m`;
+}
+
+export function generateFlightKey(flight: Flight): string {
+  return `${flight.outbound.origin}-${flight.outbound.destination}-${flight.outbound.departureTime}`;
 }

@@ -9,7 +9,16 @@
     "types": ["react", "react-dom", "@cloudflare/workers-types"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@types/*": ["./src/types/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@scripts/*": ["./src/scripts/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@layouts/*": ["./src/layouts/*"],
+      "@hooks/*": ["src/data/hooks/*"],
+      "@data/*": ["./src/data/*"]
     }
   }
 }

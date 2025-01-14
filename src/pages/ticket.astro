@@ -1,0 +1,15 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { TicketView } from '@components/TicketView';
+
+const pageTitle = 'Shared Flight';
+const pageDescription = 'View shared flight details';
+---
+
+<Layout
+	title={pageTitle}
+	description={pageDescription}>
+	<div class='flex items-center justify-center'>
+		<TicketView client:load />
+	</div>
+</Layout>

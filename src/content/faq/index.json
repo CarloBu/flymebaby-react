@@ -1,0 +1,50 @@
+{
+  "data": [
+    {
+      "question": "How do I find travel deals on gimme.flight?",
+      "answer": "Simply use the intuitive search form to specify your preferences: select your trip type (return, one-way, weekend, or long weekend), number of passengers, departure airports, destination countries, travel dates, and budget. The search engine analyzes every possible flight combination matching your criteria in real-time to find the absolute best deals.",
+      "category": "usage"
+    },
+    {
+      "question": "What makes gimme.flight a great travel app?",
+      "answer": "gimme.flight's search algorithm checks all possible flight combinations across multiple dates and routes simultaneously. While typical flight searches only look at specific date pairs, this engine analyzes a full search window of possible departure and return combinations in seconds. By focusing exclusively on Ryanair routes, the search can go deeper and find rare pricing combinations that traditional flight search engines skip over.",
+      "category": "general"
+    },
+
+    {
+      "question": "How does the weekend trip search work?",
+      "answer": "The weekend search is optimized for work-friendly getaways. For regular weekends, it finds flights departing Friday after work hours (evening) and returning Sunday before midnight, allowing you to explore another country without using vacation days. The long weekend option extends your trip by adding either Thursday evening departure or Monday evening return, creating a 3-day adventure while minimizing time off work.",
+      "category": "features"
+    },
+    {
+      "question": "Can I save flights for later?",
+      "answer": "Yes! When you find a flight you like, click the heart icon to save it. You can access all your saved flights by clicking the 'Saved Flights' button in the top right corner. Your selections are stored locally in your browser for easy access.",
+      "category": "features"
+    },
+    {
+      "question": "How can I share flight details with friends?",
+      "answer": "Each flight has a share button that allows you to easily share the flight details with friends. Click the share button to generate a link that you can send to anyone, making it simple to plan trips together.",
+      "category": "features"
+    },
+    {
+      "question": "How do I create a group booking?",
+      "answer": "When searching for flights, you can specify the number of passengers to find suitable group fares. The search results will show available seats and total pricing for your entire group, making it easy to book for multiple travelers at once.",
+      "category": "features"
+    },
+    {
+      "question": "How often are prices updated?",
+      "answer": "All flight prices are fetched in real-time when you perform a search, ensuring you always see the most current prices available from Ryanair. However, prices can change quickly, so it's recommended to book when you find a deal you like.",
+      "category": "pricing"
+    },
+    {
+      "question": "Why does gimme.flight show total trip prices instead of individual flight prices?",
+      "answer": "Total trip prices provide a more accurate picture of travel costs at a glance. This approach helps you stay within your budget more effectively and eliminates the need to manually calculate combined costs for return flights. It's especially useful when comparing different date combinations, as you can immediately see which trip fits your budget best.",
+      "category": "pricing"
+    },
+    {
+      "question": "How are destinations organized on gimme.flight?",
+      "answer": "Destinations are organized hierarchically by countries and then cities to make trip planning more intuitive. This structure helps you discover new destinations within your chosen country and makes it easier to be flexible with your travel plans. You can select entire countries to explore all available cities, or pick specific cities for more targeted searches.",
+      "category": "features"
+    }
+  ]
+}

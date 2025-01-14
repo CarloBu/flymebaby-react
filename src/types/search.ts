@@ -12,4 +12,5 @@ export interface SearchParams {
   teens: number;
   children: number;
   infants: number;
+  includeArrivalTime?: boolean;
 }

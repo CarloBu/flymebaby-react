@@ -5,15 +5,11 @@ import { ThemeToggle } from '../components/ThemeToggle';
 
 <Layout title='404 - Page Not Found'>
 	<main class='relative min-h-screen bg-white dark:bg-gray-900'>
-		<div class='fixed right-4 top-4 z-50'>
-			<ThemeToggle client:load />
-		</div>
-
 		<div
 			class='pointer-events-none relative z-10 flex min-h-screen flex-col items-center justify-center px-4 text-center'>
 			<div
 				class='pointer-events-auto space-y-8 rounded-3xl bg-white/80 p-8 shadow-lg backdrop-blur-xl transition-colors duration-300 dark:bg-gray-800/80 dark:shadow-gray-900/30'>
-				<h1 class='text-6xl font-bold text-orange-custom'>404</h1>
+				<h1 class='text-6xl font-bold text-bubble-color'>404</h1>
 
 				<div class='space-y-4'>
 					<h2
@@ -29,7 +25,7 @@ import { ThemeToggle } from '../components/ThemeToggle';
 
 				<a
 					href='/'
-					class='button-animation inline-flex min-w-[8rem] cursor-pointer select-none items-center justify-center rounded-full bg-orange-custom px-8 py-4 text-base text-white shadow-orange-shadow transition-all duration-300 hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow dark:bg-orange-custom dark:text-white dark:hover:bg-orange-hover-custom dark:hover:shadow-orange-hover-shadow'>
+					class='button-animation inline-flex min-w-[8rem] cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-8 py-4 text-base text-white shadow-bubble-shadow transition-all duration-300 hover:bg-bubble-color-hover hover:shadow-bubble-hover-shadow dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover dark:hover:shadow-bubble-hover-shadow'>
 					Return Home
 				</a>
 			</div>

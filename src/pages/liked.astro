@@ -1,0 +1,15 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { LikedFlights } from '@components/LikedFlights';
+
+const pageTitle = 'Liked Flights';
+const pageDescription = 'View your saved flights';
+---
+
+<Layout
+	title={pageTitle}
+	description={pageDescription}>
+	<div class='mt-12 flex items-center justify-center'>
+		<LikedFlights client:load />
+	</div>
+</Layout>

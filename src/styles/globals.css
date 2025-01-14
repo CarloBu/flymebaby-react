@@ -5,8 +5,8 @@
 
 .fmb-scrollbar {
 	@apply [&::-webkit-scrollbar-thumb]:bg-gray-500
-	hover:[&::-webkit-scrollbar-thumb]:bg-orange-custom
-	active:[&::-webkit-scrollbar-thumb]:bg-orange-hover-custom
+	hover:[&::-webkit-scrollbar-thumb]:bg-bubble-color
+	active:[&::-webkit-scrollbar-thumb]:bg-bubble-color-hover
 	dark:[&::-webkit-scrollbar-thumb]:bg-gray-600
 	dark:hover:[&::-webkit-scrollbar-thumb]:bg-gray-600
 	dark:active:[&::-webkit-scrollbar-thumb]:bg-gray-700
@@ -14,8 +14,8 @@
 	dark:[&::-webkit-scrollbar-track]:bg-gray-900
 	[&::-webkit-scrollbar]:w-1;
 }
-.orange-button {
-  @apply whitespace-nowrap rounded-full bg-orange-custom px-4 py-2 sm:px-6 sm:py-3 text-center text-base text-white shadow-orange-shadow hover:bg-orange-hover-custom hover:shadow-orange-hover-shadow [font-smooth:always]
+.blue-button {
+  @apply whitespace-nowrap rounded-full bg-bubble-color  px-7 py-3 text-center text-base text-white shadow-bubble-shadow hover:bg-bubble-color-hover hover:shadow-bubble-hover-shadow [font-smooth:always]
 }
 
 .button-animation{
@@ -24,6 +24,16 @@
 
 .button-animation-subtle{
   @apply scale-100 select-none transition-all duration-300 ease-pop will-change-transform hover:scale-[1.02] active:scale-[0.98] [backface-visibility:hidden] [transform-style:preserve-3d]
+}
+.button-filter-animation{
+  @apply active:scale-95 transition-all duration-200 ease-pop;
+}
+
+.button-filter{
+  @apply relative flex cursor-pointer select-none items-center justify-center rounded-full bg-gray-200/70 text-black text-base transition-all hover:bg-gray-300/70  dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-400 px-6 py-2 md:px-7 md:py-3;
+}
+.button-filter-selected{
+  @apply border-gray-900 transition-all duration-300 ease-pop bg-gray-900 text-gray-100 hover:border-gray-700 hover:bg-gray-600 hover:text-gray-100 dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900 dark:hover:border-gray-200 dark:hover:bg-gray-200;
 }
 
 
@@ -121,5 +131,17 @@
 
 .animate-progress {
   animation: progress 2s ease-in-out infinite;
+}
+ 
+
+@keyframes buttonAppear {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
  

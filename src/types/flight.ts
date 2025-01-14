@@ -1,22 +1,29 @@
+interface FlightLeg {
+  origin: string;
+  originFull: string;
+  destination: string;
+  destinationFull: string;
+  destinationCountry: string;
+  departureTime: string;
+  arrivalTime: string;
+  flightDuration: number;
+  flightNumber: string;
+  price: number;
+  currency: string;
+}
+
 export interface Flight {
-  outbound: {
-    departureTime: string;
-    originFull: string;
-    origin: string;
-    destinationFull: string;
-    destination: string;
-    destinationCountry: string;
-  };
-  inbound: {
-    departureTime: string;
-    origin: string;
-  };
+  outbound: FlightLeg;
+  inbound: FlightLeg;
   totalPrice: number;
 }
 
 export interface CityData {
   flights: Flight[];
   minPrice: number;
+  maxPrice: number;
+  minDuration: number;
+  maxDuration: number;
 }
 
 export interface CountryData {

@@ -9,7 +9,7 @@ export default {
       xxsm: "380px",
       xsm: "430px",
       ssm: "515px",
-      sm: "651px",
+      sm: "640px",
       md: "768px",
       lg: "1024px",
       xl: "1280px",
@@ -20,11 +20,11 @@ export default {
         outfit: ["Outfit", "sans-serif"],
       },
       colors: {
-        "orange-custom": "#FF7C1E",
-        "orange-custom2": "#e83815",
-        "orange-hover-custom": "#FF913E",
+        "bubble-color": "#007AB8",
+        "bubble-color-select": "#1f6bc3", // #3d5bcd
+        "bubble-color-attention": "#3d5bcd",
+        "bubble-color-hover": "#0370a7", //#007ABd
         "focus-color": "#737373",
-        "selected-color": "#f3f3f3",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -67,8 +67,8 @@ export default {
         },
       },
       boxShadow: {
-        "orange-shadow": "0px 4px 20px rgba(226, 106, 20, 0.25)",
-        "orange-hover-shadow": "0px 4px 20px rgba(226, 106, 20, 0.30)",
+        "bubble-shadow": "0px 4px 20px rgba(61, 114, 226, 0.25)",
+        "bubble-hover-shadow": "0px 4px 20px rgba(61, 114, 226, 0.30)",
       },
       borderRadius: {
         lg: "var(--radius)",

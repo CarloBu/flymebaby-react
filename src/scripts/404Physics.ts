@@ -49,7 +49,7 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
     tempCanvas.height = height;
 
     // Draw pill shape
-    ctx.fillStyle = "#FF7C1E";
+    ctx.fillStyle = "#007AB8";
     ctx.beginPath();
     ctx.roundRect(0, 0, width, height, height / 2);
     ctx.fill();
@@ -118,18 +118,18 @@ export const initPhysics = (canvas: HTMLCanvasElement) => {
     // Bottom wall
     Bodies.rectangle(
       canvas.width / 2,
-      canvas.height + 30,
+      canvas.height,
       canvas.width,
-      60,
+      180,
       wallOptions,
     ),
     // Left wall (at screen edge)
     Bodies.rectangle(0, canvas.height / 2, 10, canvas.height * 2, wallOptions),
     // Right wall (at screen edge)
     Bodies.rectangle(
-      canvas.width,
+      canvas.width - 80,
       canvas.height / 2,
-      10,
+      200,
       canvas.height * 2,
       wallOptions,
     ),
