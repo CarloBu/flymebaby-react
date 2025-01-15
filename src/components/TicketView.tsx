@@ -141,9 +141,9 @@ export function TicketView() {
       <motion.div layout className="-mb-6 flex-grow">
         <div className="space-y-8">
           <div className="text-center">
-            <div className="mt-32 flex flex-col items-center justify-center">
+            <div className="mx-4 mt-32 flex flex-col items-center justify-center">
               <p className="max-w-3xl text-xl text-gray-900 dark:text-gray-100">
-                Found a great Ryanair deal: {passengerText} for{" "}
+                Foundd a great Ryanair deal: {passengerText} for{" "}
                 <span className="font-medium">
                   {Math.round(totalPrice)} Euros
                 </span>{" "}

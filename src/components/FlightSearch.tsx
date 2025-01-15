@@ -1144,7 +1144,7 @@ export function FlightSearch({ className }: FlightSearchProps) {
                           showCode={true}
                           className="min-w-[16rem]"
                           ariaLabel="Open departure airports selection"
-                          mobileBreakpoint={360}
+                          mobileBreakpoint={423}
                           label="From"
                         />
                       </span>

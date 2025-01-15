@@ -196,7 +196,7 @@ export function DetailedFlightCard({
                 {flight.outbound.originFull}
               </div>
 
-              <div className="text-sm text-gray-600">
+              <div className="text-xs text-gray-600 xsm:text-sm">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -243,7 +243,7 @@ export function DetailedFlightCard({
                 {flight.outbound.destinationFull}
               </div>
 
-              <div className="text-sm text-gray-600">
+              <div className="text-xs text-gray-600 xsm:text-sm">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -265,36 +265,36 @@ export function DetailedFlightCard({
             </div>
           </div>
 
-          <div className="0 flex flex-col justify-between gap-3 border-t border-dashed border-gray-200 pt-4 xsm:flex-row md:gap-6">
+          <div className="0 flex flex-row justify-between gap-3 border-t border-dashed border-gray-200 pt-4 md:gap-6">
             <div className="space-y-2">
               <div className="text-xs font-medium text-gray-600">Departure</div>
               <div>
-                <div className="mb-2 text-lg font-medium text-gray-900 sm:text-xl md:text-[1.35rem]">
+                <div className="mb-2 text-sm font-medium text-gray-900 xsm:text-base min-[470px]:text-lg sm:text-xl md:text-[1.35rem]">
                   {formatDate(flight.outbound.departureTime)}
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-base text-gray-600">
+                    <span className="text-sm text-gray-600 xsm:text-base">
                       {formatTime(flight.outbound.departureTime)}
                     </span>
                     <div className="flex items-center px-2">
-                      <div className="mr-1.5 h-[1px] w-4 bg-gray-600"></div>
-                      <AirplaneIcon className="h-3 w-3 text-gray-600" />
-                      <div className="ml-1.5 h-[1px] w-4 bg-gray-600"></div>
+                      <div className="mr-1 h-[1px] w-0 bg-gray-600 xsm:mr-1.5 xsm:w-2 min-[470px]:w-4"></div>
+                      <AirplaneIcon className="h-3 w-3 text-gray-600 xsm:h-4 xsm:w-4"></AirplaneIcon>
+                      <div className="h-[1px] w-0 bg-gray-600 xsm:ml-1.5 xsm:w-2 min-[470px]:w-4"></div>
                     </div>
-                    <span className="text-base text-gray-600">
+                    <span className="text-sm text-gray-600 xsm:text-base">
                       {formatTime(flight.outbound.arrivalTime)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-600">
+                    <span className="text-xs font-medium text-gray-600 xsm:text-base">
                       {flight.outbound.origin}
                     </span>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-xs text-gray-600 xsm:text-sm">
                       {/*{formatFlightDuration(flight.outbound.flightDuration)} ·*/}
                       Direct
                     </span>
-                    <span className="text-sm font-medium text-gray-600">
+                    <span className="text-xs font-medium text-gray-600 xsm:text-sm">
                       {flight.outbound.destination}
                     </span>
                   </div>
@@ -303,34 +303,36 @@ export function DetailedFlightCard({
             </div>
             {showReturnInfo && (
               <div className="space-y-2 md:text-right">
-                <div className="text-xs font-medium text-gray-600">Return</div>
+                <div className="text-right text-xs font-medium text-gray-600">
+                  Return
+                </div>
                 <div>
-                  <div className="mb-2 text-lg font-medium text-gray-900 md:text-[1.35rem]">
+                  <div className="mb-2 text-right text-sm font-medium text-gray-900 xsm:text-base min-[470px]:text-lg sm:text-xl md:text-[1.35rem]">
                     {formatDate(flight.inbound.departureTime)}
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-base text-gray-600">
+                      <span className="text-xs text-gray-600 xsm:text-base">
                         {formatTime(flight.inbound.departureTime)}
                       </span>
                       <div className="flex items-center px-1.5">
-                        <div className="mr-1.5 h-[1px] w-4 bg-gray-600"></div>
-                        <AirplaneIcon className="h-3 w-4 text-gray-600" />
-                        <div className="ml-1.5 h-[1px] w-4 bg-gray-600"></div>
+                        <div className="mr-1 h-[1px] w-0 bg-gray-600 xsm:mr-1.5 xsm:w-2 min-[470px]:w-4"></div>
+                        <AirplaneIcon className="h-3 w-3 text-gray-600 xsm:h-4 xsm:w-4"></AirplaneIcon>
+                        <div className="h-[1px] w-0 bg-gray-600 xsm:ml-1.5 xsm:w-2 min-[470px]:w-4"></div>
                       </div>
-                      <span className="text-base text-gray-600">
+                      <span className="text-sm text-gray-600 xsm:text-base">
                         {formatTime(flight.inbound.arrivalTime)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-600">
+                      <span className="text-xs font-medium text-gray-600 xsm:text-base">
                         {flight.inbound.origin}
                       </span>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-xs text-gray-600 xsm:text-sm">
                         {/*{formatFlightDuration(flight.inbound.flightDuration)} ·*/}
                         Direct
                       </span>
-                      <span className="text-sm font-medium text-gray-600">
+                      <span className="text-xs font-medium text-gray-600 xsm:text-sm">
                         {flight.inbound.destination}
                       </span>
                     </div>
@@ -458,7 +460,7 @@ export function DetailedFlightCard({
               </Tooltip>
             </TooltipProvider>
 
-            <div className="mt-6 space-y-1 md:mt-4">
+            <div className="ml-2 mt-3 space-y-1 md:mt-6">
               <div className="text-base text-gray-900">
                 {[
                   adults > 0 && `${adults} adult${adults !== 1 ? "s" : ""}`,

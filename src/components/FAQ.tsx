@@ -147,7 +147,7 @@ export function FAQ({ animated = false }: { animated?: boolean }) {
       {!isLoading && (
         <>
           <div className="absolute inset-0 -z-10 bg-[url('/FAQ-background.webp')] bg-cover bg-top bg-no-repeat dark:bg-[url('/FAQ-background-dark.webp')]" />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-white/10 via-white/10 via-[70%] to-white dark:from-gray-900/10 dark:via-gray-900/10 dark:via-[50%] dark:to-gray-900" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white via-white/10 via-[20rem] to-transparent dark:from-gray-900/10 dark:via-gray-900/10 dark:via-[50%] dark:to-gray-900" />
 
           <div className="mx-auto max-w-5xl px-4 pb-16 pt-5 sm:pt-16">
             <motion.h2
