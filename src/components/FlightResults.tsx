@@ -156,15 +156,7 @@ function CityGroup({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      transition={{
-        type: "tween",
-        duration: 0.3,
-        ease: "easeOut",
-      }}
+    <div
       id={`city-group-${city.toLowerCase().replace(/\s+/g, "-")}`}
       className={`rounded-3xl border bg-gray-100 p-3 transition-all duration-1000 dark:bg-gray-800 xsm:p-4 sm:p-6 ${
         isHighlighted
@@ -292,7 +284,7 @@ function CityGroup({
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }
 
@@ -630,7 +622,7 @@ export function FlightResults({
       highlightedFlightId: null,
     });
 
-    // Scroll to the city element
+    // Use a callback to scroll after state updates
     setTimeout(() => {
       const cityElement = document.getElementById(
         `city-group-${city.toLowerCase().replace(/\s+/g, "-")}`,
