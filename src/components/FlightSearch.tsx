@@ -289,7 +289,6 @@ export function FlightSearch({ className }: FlightSearchProps) {
   const cleanupRef = React.useRef<(() => void) | null>(null);
   // Reference for scroll behavior after search
   const submitResultsFold = useRef<HTMLDivElement>(null);
-  const hasScrolled = useRef(false);
 
   // Add new state for tracking answered questions and current question
   const [answeredQuestions, setAnsweredQuestions] = useState<AnsweredQuestions>(
@@ -402,7 +401,6 @@ export function FlightSearch({ className }: FlightSearchProps) {
       if (cleanupRef.current) {
         cleanupRef.current();
       }
-      hasScrolled.current = false;
     };
   }, []);
 
@@ -663,12 +661,7 @@ export function FlightSearch({ className }: FlightSearchProps) {
       e.preventDefault();
     }
 
-    // Clear previous state
-    setError(null);
-    setFlights([]);
-    setNoFlightsFound(false);
-
-    // Validate inputs before setting loading state
+    // Validate inputs before doing anything
     if (!tripType) {
       setError("Please select a trip type");
       return;
@@ -719,7 +712,22 @@ export function FlightSearch({ className }: FlightSearchProps) {
       return;
     }
 
-    // Start loading only after all validations pass
+    // First scroll to the results fold
+    await new Promise<void>((resolve) => {
+      submitResultsFold.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      // Wait for scroll animation to complete
+      setTimeout(resolve, 500);
+    });
+
+    // Clear previous state
+    setError(null);
+    setFlights([]);
+    setNoFlightsFound(false);
+
+    // Start loading after scroll is complete
     setLoading(true);
 
     if (cleanupRef.current) {
@@ -814,22 +822,11 @@ export function FlightSearch({ className }: FlightSearchProps) {
 
       eventSource.onmessage = (event) => {
         //console.log("Raw SSE event:", event);
-        console.log("Raw SSE data:", event.data);
-
-        if (!hasScrolled.current) {
-          setTimeout(() => {
-            submitResultsFold.current?.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }, 100);
-          hasScrolled.current = true;
-        }
+        //console.log("Raw SSE data:", event.data);
 
         if (event.data === "END") {
           cleanup();
           setLoading(false);
-          hasScrolled.current = false;
 
           setFlights((currentFlights) => {
             if (currentFlights.length === 0) {
@@ -1283,7 +1280,7 @@ export function FlightSearch({ className }: FlightSearchProps) {
             </PopMotion>
           )}
         </div>
-
+        <div ref={submitResultsFold} className="h-1 w-full select-none"></div>
         {/* Only show search button when all questions are answered AND animation is complete */}
         {Object.values(answeredQuestions).every(Boolean) &&
           animationStates.searchButton &&
@@ -1313,7 +1310,6 @@ export function FlightSearch({ className }: FlightSearchProps) {
               </button>
             </PopMotion>
           )}
-        <div ref={submitResultsFold} className="h-1 w-full select-none"></div>
       </form>
 
       {/* Show error if present */}
