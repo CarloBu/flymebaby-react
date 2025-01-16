@@ -223,9 +223,7 @@ export const PassengerModal = ({
     const currentCount = tempPassengers[type] ?? 0;
 
     const isDecrementDisabled =
-      type === "adult"
-        ? currentCount <= 1 // Always disable decrement for adult when count is 1 or less
-        : currentCount === 0;
+      type === "adult" ? currentCount <= 1 : currentCount === 0;
 
     const isIncrementDisabled =
       type === "infant"
@@ -235,7 +233,7 @@ export const PassengerModal = ({
     return (
       <div
         className={cn(
-          "flex items-center gap-2 space-y-2 transition-opacity duration-200 md:space-y-0 md:opacity-0 md:transition-opacity md:duration-200",
+          "mb-2 flex items-center gap-1 transition-opacity duration-200 xxsm:gap-2 md:mb-0 md:opacity-0 md:transition-opacity md:duration-200",
           isActive ? "md:opacity-100" : "",
         )}
       >
@@ -245,7 +243,7 @@ export const PassengerModal = ({
           disabled={isDecrementDisabled}
           aria-label={`Decrease ${type.toLowerCase()} count`}
           className={cn(
-            "h-11 w-14 select-none rounded-full bg-gray-200/70 text-xl font-medium transition-all hover:bg-gray-300/70 focus:ring-0 focus:ring-transparent disabled:opacity-40 disabled:hover:bg-gray-200/60 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:disabled:opacity-50 dark:disabled:hover:bg-gray-600",
+            "h-8 w-10 select-none rounded-full bg-gray-200/70 text-lg font-medium transition-all hover:bg-gray-300/70 focus:ring-0 focus:ring-transparent disabled:opacity-40 disabled:hover:bg-gray-200/60 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:disabled:opacity-50 dark:disabled:hover:bg-gray-600 xxsm:h-11 xxsm:w-14 xxsm:text-xl",
             activeButton?.type === type &&
               activeButton?.action === "minus" &&
               "scale-95 bg-gray-300/70 dark:bg-gray-600",
@@ -259,7 +257,7 @@ export const PassengerModal = ({
           disabled={isIncrementDisabled}
           aria-label={`Increase ${type.toLowerCase()} count`}
           className={cn(
-            "h-11 w-14 select-none rounded-full bg-gray-200/70 text-xl font-medium transition-all hover:bg-gray-300/70 focus:ring-0 focus:ring-transparent disabled:opacity-40 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:disabled:opacity-50 dark:disabled:hover:bg-gray-600",
+            "h-8 w-10 select-none rounded-full bg-gray-200/70 text-lg font-medium transition-all hover:bg-gray-300/70 focus:ring-0 focus:ring-transparent disabled:opacity-40 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:disabled:opacity-50 dark:disabled:hover:bg-gray-600 xxsm:h-11 xxsm:w-14 xxsm:text-xl",
             activeButton?.type === type &&
               activeButton?.action === "plus" &&
               "scale-95 bg-gray-300/70 dark:bg-gray-600",
@@ -320,7 +318,7 @@ export const PassengerModal = ({
       </PopoverTrigger>
       <PopoverContent
         className={cn(
-          "w-[23rem] space-y-2 rounded-3xl border border-gray-200/70 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800",
+          "w-[23rem] max-w-[calc(100vw-2rem)] space-y-2 rounded-3xl border border-gray-200/70 bg-white p-2 shadow-xl dark:border-gray-700 dark:bg-gray-800 xxsm:w-[23rem]",
         )}
       >
         <div className="space-y-4">
@@ -328,17 +326,17 @@ export const PassengerModal = ({
             {passengerTypes.map((passenger) => (
               <div
                 key={passenger.type}
-                className="group flex items-center justify-between"
+                className="group flex items-center justify-between gap-1 xxsm:gap-2"
                 onMouseEnter={() => setActivePassengerType(passenger.type)}
                 onMouseLeave={() => setActivePassengerType("adult")}
               >
                 <div
                   className={cn(
-                    "min-w-24 rounded-full px-6 py-2 transition-colors",
+                    "shrink-0 rounded-full px-3 py-2 transition-colors xxsm:px-6",
                     passenger.count > 0 && "bg-gray-200/70 dark:bg-gray-700",
                   )}
                 >
-                  <div className="flex items-center gap-2 text-base">
+                  <div className="flex items-center gap-2 text-sm xxsm:text-base">
                     <span className="font-medium">
                       {passenger.count > 0 ? passenger.count : ""}{" "}
                       {passenger.count === 0
@@ -349,8 +347,8 @@ export const PassengerModal = ({
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-base text-gray-500">
+                <div className="flex flex-1 items-center justify-end gap-2 xxsm:gap-4">
+                  <span className="shrink text-xs text-gray-500 xxsm:text-base">
                     {passenger.ageDescription}
                   </span>
                   <PassengerControls
@@ -366,7 +364,7 @@ export const PassengerModal = ({
         <button
           type="button"
           onClick={handleApplyChanges}
-          className="w-full rounded-full bg-gray-200/70 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-gray-300/70 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+          className="w-full rounded-full bg-gray-200/70 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-300/70 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 xxsm:py-3 xxsm:text-base"
         >
           Apply
         </button>
