@@ -143,17 +143,17 @@ export function FAQ({ animated = false }: { animated?: boolean }) {
   }, []);
 
   const content = (
-    <div className="relative w-full pb-5">
+    <div className="relative min-h-[82rem] w-full pb-5">
       {!isLoading && (
         <>
-          <div className="absolute inset-0 -z-10 bg-[url('/FAQ-background.webp')] bg-cover bg-top bg-no-repeat dark:bg-[url('/FAQ-background-dark.webp')]" />
+          <div className="absolute inset-0 -z-10 bg-[url('/FAQ-background.webp')] bg-cover bg-right bg-no-repeat dark:bg-[url('/FAQ-background-dark.webp')]" />
           <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white via-white/10 via-[20rem] to-transparent dark:from-gray-900/10 dark:via-gray-900/10 dark:via-[50%] dark:to-gray-900" />
 
-          <div className="mx-auto max-w-5xl px-4 pb-16 pt-5 sm:pt-16">
+          <div className="mx-auto max-w-2xl px-4 pb-16 pt-5 sm:pt-16 lg:max-w-5xl">
             <motion.h2
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="mb-6 ml-4 text-left text-2xl font-bold sm:mb-10 sm:text-center md:text-3xl"
+              className="mb-6 ml-4 text-left text-2xl font-bold sm:mb-10 sm:text-center sm:text-3xl"
             >
               <span className="block sm:inline">Frequently </span>
               <span className="block sm:inline">Asked Questions</span>

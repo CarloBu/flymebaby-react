@@ -1044,8 +1044,8 @@ export function FlightSearch({ className }: FlightSearchProps) {
 
   return (
     <>
-      <div className="z-20 text-center">
-        <h1 className="mb-6 ml-8 mt-24 text-left text-2xl font-bold md:mb-10 md:mt-32 md:text-center md:text-3xl">
+      <div className="z-20 mt-24 text-center lg:mt-32">
+        <h1 className="mx-auto mb-6 max-w-xl px-4 text-left text-2xl font-bold lg:mb-10 lg:max-w-6xl lg:text-center lg:text-3xl">
           Find the best Ryanair deals!
         </h1>
       </div>
@@ -1054,22 +1054,22 @@ export function FlightSearch({ className }: FlightSearchProps) {
           e.preventDefault();
           handleSubmit();
         }}
-        className="mx-auto max-w-6xl px-4"
+        className="mx-auto max-w-xl px-4 lg:max-w-6xl"
         role="search"
         aria-label="Flight search form"
       >
-        <div className="items-left flex flex-col gap-4 text-base leading-relaxed md:items-center md:gap-6 md:text-lg">
+        <div className="items-left flex flex-col gap-4 text-base leading-relaxed lg:items-center lg:gap-6 lg:text-lg">
           {/* Trip Type Question */}
           {animationStates.tripType.question && (
             <PopMotion
               key="mode-section"
-              className="flex flex-col gap-x-2 gap-y-2 md:flex-row md:items-center md:gap-y-4"
+              className="flex flex-col gap-x-2 gap-y-2 lg:flex-row lg:items-center lg:gap-y-4"
               aria-label="trip-type-group"
             >
               <QuestionBubble
                 question="What type of the trip you want?"
                 isAnswered={answeredQuestions.tripType}
-                className="self-start md:self-auto"
+                className="self-start lg:self-auto"
               />
               {shouldShowValue("tripType") && (
                 <BaseModal
@@ -1083,7 +1083,7 @@ export function FlightSearch({ className }: FlightSearchProps) {
                   onChange={(value) => updateFormForTripType(value as TripType)}
                   placeholder="Select flight type"
                   aria-label="Select trip type"
-                  className="self-end md:self-auto"
+                  className="self-end lg:self-auto"
                 />
               )}
             </PopMotion>
@@ -1093,15 +1093,15 @@ export function FlightSearch({ className }: FlightSearchProps) {
           {shouldShowQuestion("passengers") && (
             <PopMotion
               key="passenger-section"
-              className="flex flex-col gap-x-2 gap-y-2 md:flex-row md:items-center md:gap-y-4"
+              className="flex flex-col gap-x-2 gap-y-2 lg:flex-row lg:items-center lg:gap-y-4"
             >
               <QuestionBubble
                 question="How many passengers?"
                 isAnswered={answeredQuestions.passengers}
-                className="min-w-[200px] self-start md:self-auto"
+                className="min-w-[200px] self-start lg:self-auto"
               />
               {shouldShowValue("passengers") && (
-                <div className="self-end md:self-auto">
+                <div className="self-end lg:self-auto">
                   <PassengerModal
                     passengers={passengers}
                     onChange={handlePassengersChange}
@@ -1117,17 +1117,17 @@ export function FlightSearch({ className }: FlightSearchProps) {
           {shouldShowQuestion("locations") && (
             <PopMotion
               key="locations-section"
-              className="flex flex-col gap-2 md:flex-row md:items-center"
+              className="flex flex-col gap-2 lg:flex-row lg:items-center"
             >
               <QuestionBubble
                 question="From where to fly?"
                 isAnswered={answeredQuestions.locations}
-                className="min-w-[200px] self-start md:self-auto"
+                className="min-w-[200px] self-start lg:self-auto"
               />
               {shouldShowValue("locations") && (
-                <div className="flex flex-col items-end gap-2 self-end md:flex-row md:items-center md:self-auto">
+                <div className="flex flex-col items-end gap-2 self-end lg:flex-row lg:items-center lg:self-auto">
                   <div className="flex flex-wrap items-center justify-end gap-2">
-                    <div className="flex items-center gap-1 md:gap-2">
+                    <div className="flex items-center gap-1 lg:gap-2">
                       <span className="text-bubble-color dark:text-bubble-color"></span>
                       <span className="inline-block transition-all">
                         <MultiCombobox
@@ -1146,7 +1146,7 @@ export function FlightSearch({ className }: FlightSearchProps) {
                         />
                       </span>
                     </div>
-                    <div className="ml-1 flex items-center gap-1 md:gap-2">
+                    <div className="ml-1 flex items-center gap-1 lg:gap-2">
                       <span className="text-bubble-color dark:text-bubble-color"></span>
                       <span className="inline-block transition-all">
                         <MultiCombobox
@@ -1179,15 +1179,15 @@ export function FlightSearch({ className }: FlightSearchProps) {
           {shouldShowQuestion("dates") && (
             <PopMotion
               key="dates-section"
-              className="flex flex-col gap-2 md:flex-row md:items-center"
+              className="flex flex-col gap-2 lg:flex-row lg:items-center"
             >
               <QuestionBubble
                 question="What is your search window?"
                 isAnswered={answeredQuestions.dates}
-                className="min-w-[200px] self-start md:self-auto"
+                className="min-w-[200px] self-start lg:self-auto"
               />
               {shouldShowValue("dates") && (
-                <div className="self-end md:self-auto">
+                <div className="self-end lg:self-auto">
                   {tripType === "weekend" || tripType === "longWeekend" ? (
                     <NumberModal
                       value={weekendCount}
@@ -1216,15 +1216,15 @@ export function FlightSearch({ className }: FlightSearchProps) {
           {tripType === "return" && shouldShowQuestion("duration") && (
             <PopMotion
               key="duration-section"
-              className="flex flex-col gap-2 md:flex-row md:items-center"
+              className="flex flex-col gap-2 lg:flex-row lg:items-center"
             >
               <QuestionBubble
                 question="How long is the trip?"
                 isAnswered={answeredQuestions.duration}
-                className="min-w-[200px] self-start md:self-auto"
+                className="min-w-[200px] self-start lg:self-auto"
               />
               {shouldShowValue("duration") && (
-                <div className="flex items-center gap-2 self-end md:self-auto">
+                <div className="flex items-center gap-2 self-end lg:self-auto">
                   <NumberModal
                     value={minDays}
                     onChange={(value) => handleDurationChange(value, maxDays)}
@@ -1257,15 +1257,15 @@ export function FlightSearch({ className }: FlightSearchProps) {
           {shouldShowQuestion("budget") && (
             <PopMotion
               key="budget-section"
-              className="flex flex-col gap-2 md:flex-row md:items-center"
+              className="flex flex-col gap-2 lg:flex-row lg:items-center"
             >
               <QuestionBubble
                 question="What is the trip budget?"
                 isAnswered={answeredQuestions.budget}
-                className="min-w-[200px] self-start md:self-auto"
+                className="min-w-[200px] self-start lg:self-auto"
               />
               {shouldShowValue("budget") && (
-                <div className="self-end md:self-auto">
+                <div className="self-end lg:self-auto">
                   <PriceModal
                     value={maxPrice}
                     onChange={handleBudgetChange}
