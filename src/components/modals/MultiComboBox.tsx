@@ -442,7 +442,9 @@ export function MultiCombobox({
       <PopoverContent
         className={cn(
           "rounded-3xl px-0 py-2 shadow-lg",
-          options.some((opt) => opt.city) ? "w-[23.3rem]" : "w-[21rem]",
+          options.some((opt) => opt.city)
+            ? "w-[calc(100vw-2rem)] xsm:w-[23.3rem]"
+            : "w-[calc(100vw-2rem)] xsm:w-[21rem]",
         )}
         align="center"
         sideOffset={4}

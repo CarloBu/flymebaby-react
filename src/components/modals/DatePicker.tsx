@@ -150,7 +150,7 @@ export function DatePickerWithRange({
                 <div className="min-w-52 flex-1">
                   <div
                     className={cn(
-                      "button-animation shadow-bubble-shadow hover:shadow-bubble-hover-shadow dark:hover:shadow-bubble-hover-shadow relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-7 py-3 text-base text-white transition-all hover:bg-bubble-color-hover dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover",
+                      "button-animation relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-7 py-3 text-base text-white shadow-bubble-shadow transition-all hover:bg-bubble-color-hover hover:shadow-bubble-hover-shadow dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover dark:hover:shadow-bubble-hover-shadow",
                       !dateRange?.from &&
                         "bg-bubble-color-select hover:bg-bubble-color-select",
                       hasInteractedStart && !dateRange?.from
@@ -167,7 +167,7 @@ export function DatePickerWithRange({
                 <div className="min-w-52 flex-1">
                   <div
                     className={cn(
-                      "button-animation-subtle shadow-bubble-shadow hover:shadow-bubble-hover-shadow dark:hover:shadow-bubble-hover-shadow relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-7 py-3 text-base text-white transition-all hover:bg-bubble-color-hover dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover",
+                      "button-animation-subtle relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-7 py-3 text-base text-white shadow-bubble-shadow transition-all hover:bg-bubble-color-hover hover:shadow-bubble-hover-shadow dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover dark:hover:shadow-bubble-hover-shadow",
                       !dateRange?.to &&
                         "bg-bubble-color-select hover:bg-bubble-color-select",
                       hasInteractedEnd && !dateRange?.to
