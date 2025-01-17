@@ -233,8 +233,8 @@ export const PassengerModal = ({
     return (
       <div
         className={cn(
-          "mb-2 flex items-center gap-2 transition-opacity duration-200 md:mb-0 md:opacity-0 md:transition-opacity md:duration-200",
-          isActive ? "md:opacity-100" : "",
+          "mb-2 flex items-center gap-2 transition-opacity duration-200 lg:mb-0 lg:opacity-0 lg:transition-opacity lg:duration-200",
+          isActive ? "lg:opacity-100" : "",
         )}
       >
         <button

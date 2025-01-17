@@ -175,28 +175,9 @@ export function LikedFlights() {
                           likedFlight.flight.inbound.departureTime,
                         )}
                         bgColor="bg-gray-50 dark:bg-gray-200"
+                        isLikedPage={true}
+                        onRemove={() => handleRemove(likedFlight)}
                       />
-                      <div className="absolute right-[1.55rem] top-[20rem] z-50 md:top-[1.55rem]">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => handleRemove(likedFlight)}
-                                className="scale-100 select-none rounded-xl border border-transparent p-2.5 text-red-600 transition-all duration-300 ease-pop will-change-transform [backface-visibility:hidden] [transform-style:preserve-3d] hover:scale-[1.08] hover:border-current active:scale-90 dark:text-red-400"
-                                style={{
-                                  backgroundColor: "rgb(254, 226, 226)",
-                                }}
-                                aria-label="Remove from saved flights"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Remove flight</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
                     </div>
                   </motion.div>
                 );

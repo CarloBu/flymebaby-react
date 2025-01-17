@@ -12,7 +12,7 @@ import {
 } from "@utils/flightUtils";
 import { generateShareableUrl } from "@utils/shareUtils";
 import { AirplaneIcon } from "@/components/icons";
-import { SquareArrowOutUpRight, Check, Heart } from "lucide-react";
+import { SquareArrowOutUpRight, Check, Heart, Trash2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -38,6 +38,8 @@ interface DetailedFlightCardProps {
   isHighlighted?: boolean;
   tripType?: "oneWay" | "return" | "weekend" | "longWeekend";
   bgColor?: string;
+  isLikedPage?: boolean;
+  onRemove?: (flight: Flight) => void;
 }
 
 function useMediaQuery(query: string) {
@@ -68,6 +70,8 @@ export function DetailedFlightCard({
   isHighlighted,
   tripType = "return",
   bgColor = "bg-white dark:bg-gray-200",
+  isLikedPage = false,
+  onRemove,
 }: DetailedFlightCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showShareTooltip, setShowShareTooltip] = useState(false);
@@ -358,7 +362,7 @@ export function DetailedFlightCard({
             backgroundColor: isHovered
               ? priceColor.backgroundGradient
               : priceColor.background,
-            backgroundImage: `linear-gradient(90deg, ${priceColor.background} 0%, ${priceColor.backgroundGradient} 100%)`,
+            backgroundImage: `linear-gradient(${isDesktop ? "90deg" : "180deg"}, ${priceColor.background} 0%, ${priceColor.backgroundGradient} 100%)`,
           }}
         >
           <div>
@@ -400,25 +404,43 @@ export function DetailedFlightCard({
                   <Tooltip open={showLikeTooltip ? true : undefined}>
                     <TooltipTrigger asChild>
                       <button
-                        onClick={handleLike}
+                        onClick={
+                          isLikedPage ? () => onRemove?.(flight) : handleLike
+                        }
                         className="scale-100 select-none rounded-xl border border-transparent p-2.5 shadow-sm transition-all duration-300 ease-pop will-change-transform [backface-visibility:hidden] [transform-style:preserve-3d] hover:scale-[1.08] hover:border-current active:scale-90"
                         aria-label={
-                          isLiked ? "You saved a flight" : "Save flight"
+                          isLikedPage
+                            ? "Remove from saved flights"
+                            : isLiked
+                              ? "You saved a flight"
+                              : "Save flight"
                         }
                         style={{
-                          backgroundColor: isLiked
+                          backgroundColor: isLikedPage
                             ? "rgb(254, 226, 226)"
-                            : `${priceColor.background}`,
-                          color: isLiked ? "rgb(220, 38, 38)" : priceColor.text,
+                            : isLiked
+                              ? "rgb(254, 226, 226)"
+                              : `${priceColor.background}`,
+                          color: isLikedPage
+                            ? "rgb(220, 38, 38)"
+                            : isLiked
+                              ? "rgb(220, 38, 38)"
+                              : priceColor.text,
                         }}
                       >
-                        <Heart
-                          className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`}
-                        />
+                        {isLikedPage ? (
+                          <Trash2 className="h-4 w-4" />
+                        ) : (
+                          <Heart
+                            className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`}
+                          />
+                        )}
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {isLiked ? (
+                      {isLikedPage ? (
+                        <p>Remove flight</p>
+                      ) : isLiked ? (
                         <a
                           href="/liked"
                           target="_blank"

@@ -1054,7 +1054,7 @@ export function FlightSearch({ className }: FlightSearchProps) {
           e.preventDefault();
           handleSubmit();
         }}
-        className="mx-auto max-w-xl px-4 lg:max-w-6xl"
+        className="mx-auto max-w-[29rem] px-4 lg:max-w-6xl"
         role="search"
         aria-label="Flight search form"
       >
