@@ -461,7 +461,16 @@ export function FlightResults({
       !departDaysFilter &&
       !returnDaysFilter
     ) {
-      return true;
+      // the 24h filter
+      const outboundDeparture = new Date(flight.outbound.departureTime);
+      const outboundArrivalMs =
+        outboundDeparture.getTime() +
+        flight.outbound.flightDuration * 60 * 1000;
+      const inboundDeparture = new Date(flight.inbound.departureTime);
+      const durationAtDestinationMs =
+        inboundDeparture.getTime() - outboundArrivalMs;
+      const minimumDurationMs = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      return durationAtDestinationMs >= minimumDurationMs;
     }
 
     const departHour = new Date(flight.outbound.departureTime).getHours();
@@ -487,7 +496,22 @@ export function FlightResults({
     const passesReturnDayFilter =
       !returnDaysFilter || returnDaysFilter.includes(returnDay);
 
-    return passesTimeFilters && passesDepartDayFilter && passesReturnDayFilter;
+    // Calculate duration at destination
+    const outboundDeparture = new Date(flight.outbound.departureTime);
+    const outboundArrivalMs =
+      outboundDeparture.getTime() + flight.outbound.flightDuration * 60 * 1000;
+    const inboundDeparture = new Date(flight.inbound.departureTime);
+    const durationAtDestinationMs =
+      inboundDeparture.getTime() - outboundArrivalMs;
+    const minimumDurationMs = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const passesDurationFilter = durationAtDestinationMs >= minimumDurationMs;
+
+    return (
+      passesTimeFilters &&
+      passesDepartDayFilter &&
+      passesReturnDayFilter &&
+      passesDurationFilter
+    );
   });
 
   // Group filtered flights and apply 30-flight cap per city
