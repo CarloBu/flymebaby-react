@@ -559,8 +559,14 @@ export function FlightSearch({ className }: FlightSearchProps) {
       locations: Boolean(
         formData.originAirports?.length && formData.wantedCountries?.length,
       ),
-      dates: Boolean(formData.startDate && formData.endDate),
-      duration: Boolean(formData.minDays && formData.maxDays),
+      dates:
+        Boolean(formData.startDate && formData.endDate) ||
+        (["weekend", "longWeekend"].includes(formData.tripType) &&
+          formData.weekendCount),
+      // For weekend trips, duration is automatically determined, so mark as answered and fix this stupid bug
+      duration:
+        Boolean(formData.minDays && formData.maxDays) ||
+        ["weekend", "longWeekend"].includes(formData.tripType),
       budget: Boolean(formData.maxPrice),
     };
     setAnsweredQuestions(newAnsweredQuestions);
@@ -1013,6 +1019,9 @@ export function FlightSearch({ className }: FlightSearchProps) {
       setAnsweredQuestions((prev) => ({
         ...prev,
         dates: true,
+        // For weekend mode, we need to mark duration as answered too
+        // since the duration is fixed for weekends (2-3 days)
+        duration: true,
       }));
       setCurrentQuestion("budget");
       revealQuestion("budget");
@@ -1020,6 +1029,7 @@ export function FlightSearch({ className }: FlightSearchProps) {
       setAnsweredQuestions((prev) => ({
         ...prev,
         dates: false,
+        duration: false,
       }));
       setCurrentQuestion("dates");
     }
@@ -1286,12 +1296,14 @@ export function FlightSearch({ className }: FlightSearchProps) {
           animationStates.searchButton &&
           selectedOrigins.length > 0 &&
           selectedCountries.length > 0 &&
-          (tripType === "oneWay" ||
-            tripType === "weekend" ||
-            tripType === "longWeekend" ||
-            (minDays !== null && maxDays !== null)) &&
           maxPrice !== null &&
-          passengers.adult !== null && (
+          passengers.adult !== null &&
+          (tripType === "weekend" || tripType === "longWeekend"
+            ? weekendCount !== null
+            : tripType === "oneWay" ||
+              (tripType === "return" &&
+                minDays !== null &&
+                maxDays !== null)) && (
             <PopMotion
               key="search-button-section"
               className="select-none text-center"
