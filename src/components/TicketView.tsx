@@ -143,7 +143,7 @@ export function TicketView() {
           <div className="text-center">
             <div className="mx-4 mt-32 flex flex-col items-center justify-center">
               <p className="max-w-3xl text-xl text-gray-900 dark:text-gray-100">
-                Foundd a great Ryanair deal: {passengerText} for{" "}
+                Found a great Ryanair deal: {passengerText} for{" "}
                 <span className="font-medium">
                   {Math.round(totalPrice)} Euros
                 </span>{" "}
