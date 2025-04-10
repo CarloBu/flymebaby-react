@@ -67,13 +67,13 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       const newPosition = calculatePosition(e.clientX);
       const newValues: [number, number] = [...values];
 
-      // Ensure values stay in order
-      if (isDragging === 0 && newPosition > values[1]) {
-        newValues[0] = values[1];
-      } else if (isDragging === 1 && newPosition < values[0]) {
-        newValues[1] = values[0];
+      // Ensure values stay in order and maintain minimum step difference
+      if (isDragging === 0) {
+        // Ensure the start time is not greater than end time minus step
+        newValues[0] = Math.min(newPosition, values[1] - step);
       } else {
-        newValues[isDragging] = newPosition;
+        // Ensure the end time is not less than start time plus step
+        newValues[1] = Math.max(newPosition, values[0] + step);
       }
 
       setValues(newValues);
@@ -136,9 +136,19 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
               const handleOffset =
                 (HANDLER_WIDTH / 2) * (handleIndex === 0 ? 1 : -1);
               const adjustedClientX = e.clientX + handleOffset;
-              const newPosition = calculatePosition(adjustedClientX);
+              let newPosition = calculatePosition(adjustedClientX);
 
               const newValues: [number, number] = [...values];
+
+              // Apply the minimum step constraint when setting the position via click
+              if (handleIndex === 0) {
+                // Moving the start handle: ensure it's not >= end handle - step
+                newPosition = Math.min(newPosition, values[1] - step);
+              } else {
+                // Moving the end handle: ensure it's not <= start handle + step
+                newPosition = Math.max(newPosition, values[0] + step);
+              }
+
               newValues[handleIndex] = newPosition;
 
               setValues(newValues);
