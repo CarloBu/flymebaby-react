@@ -421,6 +421,8 @@ export function FlightSearch({ className }: FlightSearchProps) {
   // Modify updateFormForTripType to handle null values
   const updateFormForTripType = (type: TripType) => {
     setTripType(type);
+    // Add page reload here and fix the nasty bug
+    window.location.reload();
     setAnsweredQuestions((prev) => ({
       ...prev,
       tripType: true,
