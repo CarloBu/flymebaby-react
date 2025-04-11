@@ -197,10 +197,13 @@ export function DetailedFlightCard({
                 {flight.outbound.origin}
               </div>
               <div className="text-base text-gray-600">
-                {flight.outbound.originFull}
+                {flight.outbound.originFull.split(", ")[0]}
+                <span className="hidden sm:inline">
+                  , {flight.outbound.originFull.split(", ")[1]}
+                </span>
               </div>
 
-              <div className="text-xs text-gray-600 xsm:text-sm">
+              <div className="hidden text-xs text-gray-600 xsm:text-sm sm:block">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -244,10 +247,13 @@ export function DetailedFlightCard({
                 {flight.outbound.destination}
               </div>
               <div className="text-base text-gray-600">
-                {flight.outbound.destinationFull}
+                {flight.outbound.destinationFull.split(", ")[0]}
+                <span className="hidden sm:inline">
+                  , {flight.outbound.destinationFull.split(", ")[1]}
+                </span>
               </div>
 
-              <div className="text-xs text-gray-600 xsm:text-sm">
+              <div className="hidden text-xs text-gray-600 xsm:text-sm sm:block">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -269,9 +275,11 @@ export function DetailedFlightCard({
             </div>
           </div>
 
-          <div className="0 flex flex-row justify-between gap-3 border-t border-dashed border-gray-200 pt-4 md:gap-6">
+          <div className="0 flex flex-row justify-between gap-3 border-gray-200 md:gap-6 md:border-t md:border-dashed md:pt-4">
             <div className="space-y-2">
-              <div className="text-xs font-medium text-gray-600">Departure</div>
+              <div className="hidden text-xs font-medium text-gray-600 sm:block">
+                Departure
+              </div>
               <div>
                 <div className="mb-2 text-sm font-medium text-gray-900 xsm:text-base min-[470px]:text-lg sm:text-xl md:text-[1.35rem]">
                   {formatDate(flight.outbound.departureTime)}
@@ -307,7 +315,7 @@ export function DetailedFlightCard({
             </div>
             {showReturnInfo && (
               <div className="space-y-2 md:text-right">
-                <div className="text-right text-xs font-medium text-gray-600">
+                <div className="hidden text-right text-xs font-medium text-gray-600 sm:block">
                   Return
                 </div>
                 <div>
