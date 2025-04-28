@@ -21,6 +21,7 @@ interface NumberModalProps {
   placeholder?: string;
   role?: string;
   "aria-label"?: string;
+  className?: string;
 }
 
 export const NumberModal = ({
@@ -36,6 +37,7 @@ export const NumberModal = ({
   placeholder = "Select",
   role,
   "aria-label": ariaLabel,
+  className,
 }: NumberModalProps) => {
   const [open, setOpen] = useState(false);
   const [activeButton, setActiveButton] = useState<"plus" | "minus" | null>(
@@ -133,11 +135,10 @@ export const NumberModal = ({
           <div
             className={cn(
               "button-animation relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-7 py-3 text-base text-white shadow-bubble-shadow transition-all hover:bg-bubble-color-hover hover:shadow-bubble-hover-shadow dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover dark:hover:shadow-bubble-hover-shadow",
+              className,
               value === null &&
                 "bg-bubble-color-select hover:bg-bubble-color-select",
-              hasInteracted && value === null
-                ? "!bg-bubble-color-attention"
-                : "",
+              className,
             )}
             role="button"
             tabIndex={0}

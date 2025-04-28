@@ -62,9 +62,6 @@ export const BaseModal = ({
               "button-animation relative flex w-fit cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-7 py-3 text-base text-white shadow-bubble-shadow transition-all hover:bg-bubble-color-hover hover:shadow-bubble-hover-shadow dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover dark:hover:shadow-bubble-hover-shadow",
               !currentValue &&
                 "bg-bubble-color-select hover:bg-bubble-color-select",
-              hasInteracted && !currentValue
-                ? "!bg-bubble-color-attention"
-                : "",
             )}
           >
             {currentOption?.label || placeholder}

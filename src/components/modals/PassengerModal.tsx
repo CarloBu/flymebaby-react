@@ -27,6 +27,7 @@ interface PassengerModalProps {
   onChange: (type: keyof PassengerState, count: number | null) => void;
   placeholder?: string;
   "aria-label"?: string;
+  className?: string;
 }
 
 const PassengerBubble = ({
@@ -39,6 +40,7 @@ const PassengerBubble = ({
 }: {
   count: number;
   label: string;
+  className?: string;
   pluralLabel: string;
   onClick: () => void;
   onRemove?: () => void;
@@ -81,6 +83,7 @@ export const PassengerModal = ({
   onChange,
   placeholder = "Select",
   "aria-label": ariaLabel,
+  className,
 }: PassengerModalProps) => {
   const [open, setOpen] = useState(false);
   const [tempPassengers, setTempPassengers] =
@@ -303,11 +306,10 @@ export const PassengerModal = ({
               onClick={() => setOpen(true)}
               className={cn(
                 "button-animation relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-7 py-3 text-base text-white shadow-bubble-shadow transition-all hover:bg-bubble-color-hover hover:shadow-bubble-hover-shadow dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover dark:hover:shadow-bubble-hover-shadow",
+                className,
                 !hasPassengers &&
                   "bg-bubble-color-select hover:bg-bubble-color-select",
-                hasInteracted && !hasPassengers
-                  ? "!bg-bubble-color-attention"
-                  : "",
+                className,
               )}
               aria-label={ariaLabel}
             >

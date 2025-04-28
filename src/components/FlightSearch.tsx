@@ -1042,21 +1042,20 @@ export function FlightSearch({ className }: FlightSearchProps) {
     saveFormData();
   };
 
-  // Helper function to determine if a question should be shown
-  const shouldShowQuestion = (questionKey: keyof AnsweredQuestions) => {
-    return (
-      animationStates[questionKey].question &&
-      (currentQuestion === questionKey || answeredQuestions[questionKey])
-    );
-  };
+  // Add new variable to track form completion
+  const isFormComplete = Object.values(answeredQuestions).every(Boolean);
 
-  // Add shouldShowValue helper
-  const shouldShowValue = (questionKey: keyof AnsweredQuestions) => {
-    return (
-      animationStates[questionKey].value &&
-      (currentQuestion === questionKey || answeredQuestions[questionKey])
-    );
-  };
+  // Add new variable to track form readiness
+  const formReady =
+    isFormComplete &&
+    selectedOrigins.length > 0 &&
+    selectedCountries.length > 0 &&
+    maxPrice !== null &&
+    passengers.adult !== null &&
+    (tripType === "weekend" || tripType === "longWeekend"
+      ? weekendCount !== null
+      : tripType === "oneWay" ||
+        (tripType === "return" && minDays !== null && maxDays !== null));
 
   return (
     <>
@@ -1085,9 +1084,9 @@ export function FlightSearch({ className }: FlightSearchProps) {
               <QuestionBubble
                 question="What type of the trip you want?"
                 isAnswered={answeredQuestions.tripType}
-                className="self-start lg:self-auto"
+                className={`self-start lg:self-auto ${!(currentQuestion === "tripType" || answeredQuestions.tripType) ? "text-bubble-question-color opacity-35 dark:text-bubble-question-color-dark dark:opacity-15" : ""}`}
               />
-              {shouldShowValue("tripType") && (
+              {animationStates.tripType.value && (
                 <BaseModal
                   options={[
                     { value: "return", label: "Round trip" },
@@ -1099,30 +1098,31 @@ export function FlightSearch({ className }: FlightSearchProps) {
                   onChange={(value) => updateFormForTripType(value as TripType)}
                   placeholder="Select flight type"
                   aria-label="Select trip type"
-                  className="self-end lg:self-auto"
+                  className={`self-end lg:self-auto ${!(currentQuestion === "tripType" || answeredQuestions.tripType) ? "pointer-events-none opacity-10" : ""}`}
                 />
               )}
             </PopMotion>
           )}
 
           {/* Passengers Question */}
-          {shouldShowQuestion("passengers") && (
+          {animationStates.passengers.question && (
             <PopMotion
               key="passenger-section"
-              className="flex flex-col gap-x-2 gap-y-2 lg:flex-row lg:items-center lg:gap-y-4"
+              className={`flex flex-col gap-x-2 gap-y-2 lg:flex-row lg:items-center lg:gap-y-4 ${!(currentQuestion === "passengers" || answeredQuestions.passengers) ? "pointer-events-none" : ""}`}
             >
               <QuestionBubble
                 question="How many passengers?"
                 isAnswered={answeredQuestions.passengers}
-                className="min-w-[200px] self-start lg:self-auto"
+                className={`min-w-[200px] self-start lg:self-auto ${!(currentQuestion === "passengers" || answeredQuestions.passengers) ? "text-bubble-question-color opacity-35 dark:text-bubble-question-color-dark dark:opacity-15" : ""}`}
               />
-              {shouldShowValue("passengers") && (
-                <div className="self-end lg:self-auto">
+              {animationStates.passengers.value && (
+                <div className={`self-end lg:self-auto`}>
                   <PassengerModal
                     passengers={passengers}
                     onChange={handlePassengersChange}
                     placeholder="Select passengers"
                     aria-label="Select number of passengers"
+                    className={`${!(currentQuestion === "passengers" || answeredQuestions.passengers) ? "pointer-events-none bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color" : ""}`}
                   />
                 </div>
               )}
@@ -1130,21 +1130,23 @@ export function FlightSearch({ className }: FlightSearchProps) {
           )}
 
           {/* Locations Question */}
-          {shouldShowQuestion("locations") && (
+          {animationStates.locations.question && (
             <PopMotion
               key="locations-section"
-              className="flex flex-col gap-2 lg:flex-row lg:items-center"
+              className={`flex flex-col gap-2 lg:flex-row lg:items-center ${!(currentQuestion === "locations" || answeredQuestions.locations) ? "pointer-events-none" : ""}`}
             >
               <QuestionBubble
                 question="From where to fly?"
                 isAnswered={answeredQuestions.locations}
-                className="min-w-[200px] self-start lg:self-auto"
+                className={`min-w-[200px] self-start lg:self-auto ${!(currentQuestion === "locations" || answeredQuestions.locations) ? "text-bubble-question-color opacity-35 dark:text-bubble-question-color-dark dark:opacity-15" : ""}`}
               />
-              {shouldShowValue("locations") && (
-                <div className="flex flex-col items-end gap-2 self-end lg:flex-row lg:items-center lg:self-auto">
+              {animationStates.locations.value && (
+                <div
+                  className={`flex flex-col items-end gap-2 self-end lg:flex-row lg:items-center lg:self-auto`}
+                >
                   <div className="flex flex-wrap items-center justify-end gap-2">
                     <div className="flex items-center gap-1 lg:gap-2">
-                      <span className="text-bubble-color dark:text-bubble-color"></span>
+                      <span className="bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color"></span>
                       <span className="inline-block transition-all">
                         <MultiCombobox
                           options={airports}
@@ -1153,17 +1155,25 @@ export function FlightSearch({ className }: FlightSearchProps) {
                             handleLocationsChange(values, selectedCountries)
                           }
                           placeholder="Select airports..."
+                          placeholderClassName={
+                            !(
+                              currentQuestion === "locations" ||
+                              answeredQuestions.locations
+                            )
+                              ? "text-bubble-color dark:text-bubble-color"
+                              : ""
+                          }
                           searchPlaceholder="Search airports..."
                           showCode={true}
-                          className="min-w-[16rem]"
                           ariaLabel="Open departure airports selection"
                           mobileBreakpoint={423}
                           label="From"
+                          className={`min-w-[16rem] ${!(currentQuestion === "locations" || answeredQuestions.locations) ? "pointer-events-none bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color" : ""}`}
                         />
                       </span>
                     </div>
                     <div className="ml-1 flex items-center gap-1 lg:gap-2">
-                      <span className="text-bubble-color dark:text-bubble-color"></span>
+                      <span className="bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color"></span>
                       <span className="inline-block transition-all">
                         <MultiCombobox
                           options={countries.map((country) => ({
@@ -1175,13 +1185,21 @@ export function FlightSearch({ className }: FlightSearchProps) {
                             handleLocationsChange(selectedOrigins, values)
                           }
                           placeholder="Select countries..."
+                          placeholderClassName={
+                            !(
+                              currentQuestion === "locations" ||
+                              answeredQuestions.locations
+                            )
+                              ? "text-bubble-color dark:text-bubble-color"
+                              : ""
+                          }
                           searchPlaceholder="Search countries..."
                           showAllOption={true}
                           allOptionText="All listed countries"
-                          className="min-w-[15rem]"
                           ariaLabel="Open destination countries selection"
                           mobileBreakpoint={423}
                           label="To"
+                          className={`min-w-[15rem] ${!(currentQuestion === "locations" || answeredQuestions.locations) ? "pointer-events-none bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color" : ""}`}
                         />
                       </span>
                     </div>
@@ -1192,18 +1210,18 @@ export function FlightSearch({ className }: FlightSearchProps) {
           )}
 
           {/* Dates Question */}
-          {shouldShowQuestion("dates") && (
+          {animationStates.dates.question && (
             <PopMotion
               key="dates-section"
-              className="flex flex-col gap-2 lg:flex-row lg:items-center"
+              className={`flex flex-col gap-2 lg:flex-row lg:items-center ${!(currentQuestion === "dates" || answeredQuestions.dates) ? "pointer-events-none" : ""}`}
             >
               <QuestionBubble
                 question="What is your search window?"
                 isAnswered={answeredQuestions.dates}
-                className="min-w-[200px] self-start lg:self-auto"
+                className={`min-w-[200px] self-start lg:self-auto ${!(currentQuestion === "dates" || answeredQuestions.dates) ? "text-bubble-question-color opacity-35 dark:text-bubble-question-color-dark dark:opacity-15" : ""}`}
               />
-              {shouldShowValue("dates") && (
-                <div className="self-end lg:self-auto">
+              {animationStates.dates.value && (
+                <div className={`self-end lg:self-auto`}>
                   {tripType === "weekend" || tripType === "longWeekend" ? (
                     <NumberModal
                       value={weekendCount}
@@ -1214,12 +1232,13 @@ export function FlightSearch({ className }: FlightSearchProps) {
                       max={6}
                       placeholder="Select weekends"
                       aria-label="weekends-search"
+                      className={`${!(currentQuestion === "dates" || answeredQuestions.dates) ? "pointer-events-none bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color" : ""}`}
                     />
                   ) : (
                     <DatePickerWithRange
                       dateRange={dateRange}
                       onDateRangeChange={handleDatesChange}
-                      className="w-auto"
+                      className={`w-auto ${!(currentQuestion === "dates" || answeredQuestions.dates) ? "pointer-events-none bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color" : ""}`}
                       aria-label="date-range"
                     />
                   )}
@@ -1229,18 +1248,20 @@ export function FlightSearch({ className }: FlightSearchProps) {
           )}
 
           {/* Duration Question */}
-          {tripType === "return" && shouldShowQuestion("duration") && (
+          {tripType === "return" && animationStates.duration.question && (
             <PopMotion
               key="duration-section"
-              className="flex flex-col gap-2 lg:flex-row lg:items-center"
+              className={`flex flex-col gap-2 lg:flex-row lg:items-center ${!(currentQuestion === "duration" || answeredQuestions.duration) ? "pointer-events-none" : ""}`}
             >
               <QuestionBubble
                 question="How long is the trip?"
                 isAnswered={answeredQuestions.duration}
-                className="min-w-[200px] self-start lg:self-auto"
+                className={`min-w-[200px] self-start lg:self-auto ${!(currentQuestion === "duration" || answeredQuestions.duration) ? "text-bubble-question-color opacity-35 dark:text-bubble-question-color-dark dark:opacity-15" : ""}`}
               />
-              {shouldShowValue("duration") && (
-                <div className="flex items-center gap-2 self-end lg:self-auto">
+              {animationStates.duration.value && (
+                <div
+                  className={`flex items-center gap-2 self-end lg:self-auto`}
+                >
                   <NumberModal
                     value={minDays}
                     onChange={(value) => handleDurationChange(value, maxDays)}
@@ -1251,8 +1272,9 @@ export function FlightSearch({ className }: FlightSearchProps) {
                     startFrom={maxDays}
                     placeholder="Select"
                     aria-label="min-duration"
+                    className={`${!(currentQuestion === "duration" || answeredQuestions.duration) ? "pointer-events-none bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color" : ""}`}
                   />
-                  <span className="w-1 text-bubble-color dark:text-bubble-color"></span>
+                  <span className="w-1 bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color"></span>
                   <NumberModal
                     value={maxDays}
                     onChange={(value) => handleDurationChange(minDays, value)}
@@ -1263,6 +1285,7 @@ export function FlightSearch({ className }: FlightSearchProps) {
                     startFrom={minDays}
                     placeholder="Select"
                     aria-label="max-duration"
+                    className={`${!(currentQuestion === "duration" || answeredQuestions.duration) ? "pointer-events-none bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color" : ""}`}
                   />
                 </div>
               )}
@@ -1270,64 +1293,52 @@ export function FlightSearch({ className }: FlightSearchProps) {
           )}
 
           {/* Budget Question */}
-          {shouldShowQuestion("budget") && (
+          {animationStates.budget.question && (
             <PopMotion
               key="budget-section"
-              className="flex flex-col gap-2 lg:flex-row lg:items-center"
+              className={`flex flex-col gap-2 lg:flex-row lg:items-center ${!(currentQuestion === "budget" || answeredQuestions.budget) ? "pointer-events-none" : ""}`}
             >
               <QuestionBubble
                 question="What is the trip budget?"
                 isAnswered={answeredQuestions.budget}
-                className="min-w-[200px] self-start lg:self-auto"
+                className={`min-w-[200px] self-start lg:self-auto ${!(currentQuestion === "budget" || answeredQuestions.budget) ? "text-bubble-question-color opacity-35 dark:text-bubble-question-color-dark dark:opacity-15" : ""}`}
               />
-              {shouldShowValue("budget") && (
-                <div className="self-end lg:self-auto">
-                  <PriceModal
-                    value={maxPrice}
-                    onChange={handleBudgetChange}
-                    min={0}
-                    max={1050}
-                    startFrom={getTotalPassengers() * 100}
-                    placeholder="Set trip budget"
-                    aria-label="Set a maximum budget"
-                  />
-                </div>
+              {animationStates.budget.value && (
+                <PriceModal
+                  value={maxPrice}
+                  onChange={handleBudgetChange}
+                  min={0}
+                  max={1050}
+                  startFrom={getTotalPassengers() * 100}
+                  placeholder="Set trip budget"
+                  aria-label="Set a maximum budget"
+                  className={`self-end lg:self-auto ${!(currentQuestion === "budget" || answeredQuestions.budget) ? "pointer-events-none bg-bubble-color text-bubble-color opacity-10 dark:text-bubble-color" : ""}`}
+                />
               )}
             </PopMotion>
           )}
         </div>
         <div ref={submitResultsFold} className="h-1 w-full select-none"></div>
-        {/* Only show search button when all questions are answered AND animation is complete */}
-        {Object.values(answeredQuestions).every(Boolean) &&
-          animationStates.searchButton &&
-          selectedOrigins.length > 0 &&
-          selectedCountries.length > 0 &&
-          maxPrice !== null &&
-          passengers.adult !== null &&
-          (tripType === "weekend" || tripType === "longWeekend"
-            ? weekendCount !== null
-            : tripType === "oneWay" ||
-              (tripType === "return" &&
-                minDays !== null &&
-                maxDays !== null)) && (
-            <PopMotion
-              key="search-button-section"
-              className="select-none text-center"
+        {/* Show search button when animation is complete, style based on form readiness */}
+        {animationStates.searchButton && (
+          <PopMotion
+            key="search-button-section"
+            className="select-none text-center"
+          >
+            <button
+              type="submit"
+              className={`button-animation mb-5 mt-12 inline-flex select-none items-center justify-center rounded-full bg-bubble-color px-9 py-5 text-base font-medium text-white shadow-[0_0.4rem_1.5rem_-0.3rem] shadow-black/30 transition-all will-change-transform [transform-style:preserve-3d] hover:bg-bubble-color-hover hover:shadow-[0_0.4rem_1rem_-0.2rem] hover:shadow-black/30 focus:outline-none focus:ring-2 focus:ring-offset-2 ${!formReady ? "pointer-events-none bg-bubble-color !text-bubble-color opacity-10 dark:text-bubble-color" : ""}`}
+              disabled={loading || !formReady}
+              aria-busy={loading}
+              role="button"
+              aria-label={
+                loading ? "Searching for flights" : "Search for flights"
+              }
             >
-              <button
-                type="submit"
-                className="button-animation mb-5 mt-12 inline-flex select-none items-center justify-center rounded-full bg-bubble-color px-9 py-5 text-base font-medium text-white shadow-[0_0.4rem_1.5rem_-0.3rem] shadow-black/30 transition-all will-change-transform [transform-style:preserve-3d] hover:bg-bubble-color-hover hover:shadow-[0_0.4rem_1rem_-0.2rem] hover:shadow-black/30 focus:outline-none focus:ring-2 focus:ring-offset-2"
-                disabled={loading}
-                aria-busy={loading}
-                role="button"
-                aria-label={
-                  loading ? "Searching for flights" : "Search for flights"
-                }
-              >
-                {loading ? "Searching..." : "Gimme Flights"}
-              </button>
-            </PopMotion>
-          )}
+              {loading ? "Searching..." : "Gimme Flights"}
+            </button>
+          </PopMotion>
+        )}
       </form>
 
       {/* Show error if present */}

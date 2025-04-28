@@ -22,6 +22,7 @@ export function DatePickerWithRange({
   className,
   dateRange,
   onDateRangeChange,
+  "aria-label": ariaLabel,
 }: DatePickerWithRangeProps) {
   const [isStartDateOpen, setIsStartDateOpen] = React.useState(false);
   const [isEndDateOpen, setIsEndDateOpen] = React.useState(false);
@@ -134,10 +135,7 @@ export function DatePickerWithRange({
   };
 
   return (
-    <PopMotion
-      key="date-section"
-      className={cn("relative inline-flex gap-2", className)}
-    >
+    <PopMotion key="date-section" className={cn("relative inline-flex gap-2")}>
       <div className="flex w-full flex-wrap justify-end gap-4">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -151,11 +149,10 @@ export function DatePickerWithRange({
                   <div
                     className={cn(
                       "button-animation relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-7 py-3 text-base text-white shadow-bubble-shadow transition-all hover:bg-bubble-color-hover hover:shadow-bubble-hover-shadow dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover dark:hover:shadow-bubble-hover-shadow",
+                      className,
                       !dateRange?.from &&
                         "bg-bubble-color-select hover:bg-bubble-color-select",
-                      hasInteractedStart && !dateRange?.from
-                        ? "!bg-bubble-color-attention"
-                        : "",
+                      className,
                     )}
                   >
                     {formatStartDate()}
@@ -168,11 +165,10 @@ export function DatePickerWithRange({
                   <div
                     className={cn(
                       "button-animation-subtle relative flex min-w-[7rem] cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-7 py-3 text-base text-white shadow-bubble-shadow transition-all hover:bg-bubble-color-hover hover:shadow-bubble-hover-shadow dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover dark:hover:shadow-bubble-hover-shadow",
+                      className,
                       !dateRange?.to &&
                         "bg-bubble-color-select hover:bg-bubble-color-select",
-                      hasInteractedEnd && !dateRange?.to
-                        ? "!bg-bubble-color-attention"
-                        : "",
+                      className,
                     )}
                   >
                     {formatEndDate()}

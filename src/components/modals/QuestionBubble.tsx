@@ -94,7 +94,7 @@ export const QuestionBubble = ({
         damping: 15,
       }}
       className={cn(
-        "mr-5 flex items-center gap-2 rounded-3xl bg-gray-200/70 py-2 pl-7 text-base dark:bg-gray-700",
+        "bg-bubble-question-color dark:bg-bubble-question-color-dark mr-5 flex items-center gap-2 rounded-3xl py-2 pl-7 text-base",
         className,
       )}
     >

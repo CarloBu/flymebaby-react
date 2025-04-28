@@ -15,6 +15,7 @@ interface PriceModalProps {
   currency?: string;
   placeholder?: string;
   "aria-label"?: string;
+  className?: string;
 }
 
 export const PriceModal = ({
@@ -26,6 +27,7 @@ export const PriceModal = ({
   currency = "EUR",
   placeholder = "Select",
   "aria-label": ariaLabel,
+  className,
 }: PriceModalProps) => {
   const [open, setOpen] = useState(false);
   const [activeButton, setActiveButton] = useState<"plus" | "minus" | null>(
@@ -115,10 +117,9 @@ export const PriceModal = ({
         <button
           type="button"
           className={cn(
-            "button-animation shadow-bubble-shadow hover:shadow-bubble-hover-shadow dark:hover:shadow-bubble-hover-shadow relative flex min-w-[8rem] cursor-pointer select-none items-center justify-center rounded-full bg-bubble-color px-7 py-3 text-base text-white transition-all hover:bg-bubble-color-hover dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover",
+            `button-animation relative flex min-w-[8rem] cursor-pointer select-none items-center justify-center self-end rounded-full bg-bubble-color px-7 py-3 text-base text-white shadow-bubble-shadow transition-all hover:bg-bubble-color-hover hover:shadow-bubble-hover-shadow dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover dark:hover:shadow-bubble-hover-shadow lg:self-auto ${className}`,
             value === null &&
-              "bg-bubble-color-select hover:bg-bubble-color-select",
-            hasInteracted && value === null ? "!bg-bubble-color-attention" : "",
+              `bg-bubble-color-select hover:bg-bubble-color-select ${className}`,
           )}
           aria-label={ariaLabel}
         >

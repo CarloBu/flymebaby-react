@@ -47,6 +47,7 @@ interface MultiComboboxProps {
   ariaLabel?: string;
   mobileBreakpoint?: number;
   label?: string;
+  placeholderClassName?: string;
 }
 
 export function MultiCombobox({
@@ -64,6 +65,7 @@ export function MultiCombobox({
   ariaLabel,
   mobileBreakpoint = 419,
   label,
+  placeholderClassName,
 }: MultiComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -236,7 +238,12 @@ export function MultiCombobox({
 
     if (selectedValues.length === 0) {
       return (
-        <span className="ml-4 text-base text-white/90 dark:text-white/90">
+        <span
+          className={cn(
+            "ml-4 text-base text-white/90 dark:text-white/90",
+            placeholderClassName,
+          )}
+        >
           {placeholder}
         </span>
       );
@@ -419,19 +426,22 @@ export function MultiCombobox({
           aria-expanded={open}
           className={cn(
             "button-animation-subtle flex w-full select-none items-center justify-start gap-2 whitespace-nowrap rounded-full border-0 bg-bubble-color px-2 py-6 text-base text-white shadow-bubble-shadow transition-all hover:bg-bubble-color-hover hover:text-white hover:shadow-bubble-hover-shadow dark:bg-bubble-color dark:text-white dark:hover:bg-bubble-color-hover dark:hover:text-white dark:hover:shadow-bubble-hover-shadow",
+            className,
             selectedValues.length > 0 ? "min-w-[5rem]" : "min-w-[11rem]",
             selectedValues.length === 0 &&
               "bg-bubble-color-select hover:bg-bubble-color-select",
-            hasInteracted && selectedValues.length === 0
-              ? "!bg-bubble-color-attention"
-              : "",
             className,
           )}
           aria-label={ariaLabel}
         >
           <div className="ml-5 flex flex-1 flex-wrap items-center gap-1.5 text-base">
             {label && (
-              <span className="mr-1 font-medium text-white/90 dark:text-white/90">
+              <span
+                className={cn(
+                  "mr-1 font-medium text-white/90 dark:text-white/90",
+                  placeholderClassName,
+                )}
+              >
                 {label}
               </span>
             )}

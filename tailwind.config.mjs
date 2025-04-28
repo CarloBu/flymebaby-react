@@ -21,8 +21,11 @@ export default {
       },
       colors: {
         "bubble-color": "#007AB8",
-        "bubble-color-select": "#1f6bc3", // #3d5bcd
-        "bubble-color-attention": "#3d5bcd",
+        "bubble-question-color": "#eeeeee",
+        "bubble-gray-color": "#eeeeee",
+        "bubble-question-color-dark": "#414141",
+        "bubble-gray-color-dark": "#414141",
+        "bubble-color-select": "#3d5bcd", // #3d5bcd
         "bubble-color-hover": "#0370a7", //#007ABd
         "focus-color": "#737373",
         border: "hsl(var(--border))",
